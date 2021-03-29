@@ -2,14 +2,14 @@
 """
 Skybox
 """
-import copy
+
 import OpenGL.GL as GL
 import numpy as np
 from PIL import Image
-
-# Skybox vertices
 from core import VertexArray
 
+
+# Skybox vertices
 skyboxVertices = np.array((
     # positions
     (-1.0, 1.0, -1.0),
@@ -65,11 +65,13 @@ class Skybox:
     def __init__(self, shader_skybox):
         self.shader_skybox = shader_skybox
         # -------------------------------Cubemap stuff------------------------------------
-        # Create a Skybox texture, and bind it to proper texture target
+        # Create a cubemap texture, and bind it to proper texture target
         # (bind to GL_TEXTURE_CUBE_MAP)
-        self.skybox_texture = GL.glGenTextures(1)
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.skybox_texture)
+        self.texture_cubemap = GL.glGenTextures(1)
+        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
 
+        # Read all the faces one by one
+        # Specify a 2D texture image for each
         face_list_urls = ["./../resources/skybox/" + s for s in face_list]
         for index, face_url in enumerate(face_list_urls):
             face = np.array(Image.open(face_url))
@@ -96,39 +98,32 @@ class Skybox:
         self.loc = {n: GL.glGetUniformLocation(self.shader_skybox.glid, n) for n in names}
 
     def draw(self, projection, view,  model):
-        # change depth functions
-        GL.glDepthMask(GL.GL_FALSE)
+        GL.glUseProgram(self.shader_skybox.glid)
+
+        # change depth function so depth test passes when values are equal to depth buffer's content
         GL.glDepthFunc(GL.GL_LEQUAL)
 
-        GL.glUseProgram(self.shader_skybox.glid)
-        view_copy = copy.deepcopy(view)
-        for i in range(3):
-            view_copy[i, 3] = 0
+        # Disable depth writing
+        GL.glDepthMask(GL.GL_FALSE)
 
-        GL.glUniformMatrix4fv(self.loc['view'], 1, True, view_copy)
+        # Remove translation from view matrix
+        # (last coloumn's top 3 values)
+        # for i in range(3):
+        #     view[i, 3] = 0
+
+        GL.glUniformMatrix4fv(self.loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(self.loc['projection'], 1, True, projection)
         GL.glUniformMatrix4fv(self.loc['model'], 1, True, model)
 
-        # skybox cube
-        # GL.glBindVertexArray(self.glid)
-        GL.glActiveTexture(GL.GL_TEXTURE0)
-        loc = GL.glGetUniformLocation(self.shader_skybox.glid, 'skybox')
-        GL.glUniform1i(loc, 0)
-        self.vertex_array.execute(GL.GL_TRIANGLES)
-
-        GL.glDepthMask(GL.GL_FALSE)
-
+        # Bind the skybox's VAO
         GL.glBindVertexArray(self.vertex_array.glid)
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.skybox_texture)
+        # ??? (making no difference)
+        GL.glActiveTexture(GL.GL_TEXTURE0)
+        # Bind the cubemap texture
+        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, 36)
 
-        GL.glDepthFunc(GL.GL_LESS)
-
+        # Set depth function back to default
         GL.glDepthMask(GL.GL_TRUE)
 
-        # bind the cubemap texture before rendering the container
-
-
-        # leave clean state for easier debugging
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, 0)
-        GL.glUseProgram(0)
+        GL.glDepthFunc(GL.GL_LESS)
