@@ -16,6 +16,7 @@ import assimpcy                     # 3D resource loader
 
 from core import Shader, Viewer
 from skybox import Skybox
+import simpleaudio as sa
 
 
 def main():
@@ -26,6 +27,10 @@ def main():
     shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
 
     viewer.add(Skybox(shader_skybox=shader_skybox))
+
+    # Start playing ambient audio in background
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # start rendering loop
     viewer.run()
