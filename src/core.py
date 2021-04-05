@@ -7,13 +7,13 @@ from itertools import cycle         # allows easy circular choice list
 import OpenGL.GL as GL              # standard Python OpenGL wrapper
 import assimpcy
 import glfw                         # lean window system wrapper for OpenGL
-import numpy
 import numpy as np                  # all matrix manipulations & OpenGL args
 
 # our transform functions
 from PIL import Image
 
-from transform import Trackball, identity, translate
+from transform import Trackball, identity, translate, lookat
+from camera import Camera
 
 
 def load_textured(file, shader, tex_file=None):
@@ -250,6 +250,8 @@ class Viewer(Node):
         glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
         glfw.set_scroll_callback(self.win, self.on_scroll)
         glfw.set_window_size_callback(self.win, self.on_size)
+        # Process user inputs
+        # glfw.set_key_callback(self.win, self.process_input)
 
         # useful message to check OpenGL renderer characteristics
         print('OpenGL', GL.glGetString(GL.GL_VERSION).decode() + ', GLSL',
@@ -266,6 +268,9 @@ class Viewer(Node):
 
         self.model = identity()
 
+        self.camera = Camera()
+        self.last_frame = 0.0
+
     def run(self):
         """ Main render loop for this OpenGL window """
         while not glfw.window_should_close(self.win):
@@ -276,6 +281,16 @@ class Viewer(Node):
             view = self.trackball.view_matrix()
             projection = self.trackball.projection_matrix(win_size)
 
+            # Calculate the time between last rendered frame
+            current_frame = glfw.get_time()
+            delta_time = current_frame - self.last_frame
+            self.last_frame = current_frame
+
+            # Update the view matrix with camera orientation
+            view = lookat(eye=self.camera.get_camera_pos(),
+                          target=self.camera.get_camera_pos()+self.camera.get_camera_front(),
+                          up=self.camera.get_camera_up())
+
             # draw our scene objects
             self.draw(projection, view, identity())
 
@@ -284,6 +299,9 @@ class Viewer(Node):
 
             # Poll for and process events
             glfw.poll_events()
+
+            # Get ASDF inputs from user for camera POV
+            self.camera.process_input(window=self.win, delta_time=delta_time)
 
     def on_key(self, _win, key, _scancode, action, _mods):
         """ 'Q' or 'Escape' quits """
