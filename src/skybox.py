@@ -7,7 +7,7 @@ import OpenGL.GL as GL
 import numpy as np
 from PIL import Image
 from core import VertexArray
-
+from transform import translate, perspective, rotate, lookat
 
 # Skybox vertices
 skyboxVertices = np.array((
@@ -72,7 +72,7 @@ class Skybox:
 
         # Read all the faces one by one
         # Specify a 2D texture image for each
-        face_list_urls = ["./../resources/skybox/" + s for s in face_list]
+        face_list_urls = ["./../resources/skybox2/" + s for s in face_list]
         for index, face_url in enumerate(face_list_urls):
             face = np.array(Image.open(face_url))
             GL.glTexImage2D(GL.GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, GL.GL_RGB, face.shape[1],
@@ -97,7 +97,7 @@ class Skybox:
         names = ['view', 'projection', 'model']
         self.loc = {n: GL.glGetUniformLocation(self.shader_skybox.glid, n) for n in names}
 
-    def draw(self, projection, view,  model):
+    def draw(self, projection, view, model):
         GL.glUseProgram(self.shader_skybox.glid)
 
         # change depth function so depth test passes when values are equal to depth buffer's content
@@ -110,6 +110,10 @@ class Skybox:
         # (last coloumn's top 3 values)
         # for i in range(3):
         #     view[i, 3] = 0
+
+        # model = rotate(axis=(1.0, 0.0, 0.0), radians=-55.0)
+        # view = translate(z=-3.0)
+        # projection = perspective(45.0, 800.0/600.0, 0.1, 100.0)
 
         GL.glUniformMatrix4fv(self.loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(self.loc['projection'], 1, True, projection)
