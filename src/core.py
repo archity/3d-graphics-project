@@ -12,7 +12,7 @@ import numpy as np                  # all matrix manipulations & OpenGL args
 # our transform functions
 from PIL import Image
 
-from transform import Trackball, identity, translate, lookat
+from transform import Trackball, identity, translate, lookat, perspective
 from camera import Camera
 
 
@@ -230,6 +230,9 @@ class Viewer(Node):
     def __init__(self, width=640, height=480):
         super().__init__()
 
+        self.camera = Camera()
+        self.last_frame = 0.0
+
         # version hints: create GL window with >= OpenGL 3.3 and core profile
         glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
         glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
@@ -245,13 +248,13 @@ class Viewer(Node):
         self.trackball = Trackball()
         self.mouse = (0, 0)
 
+        glfw.set_cursor_pos_callback(window=self.win, cbfun=self.camera.process_mouse_movement)
+
         # register event handlers
         glfw.set_key_callback(self.win, self.on_key)
         glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
         glfw.set_scroll_callback(self.win, self.on_scroll)
         glfw.set_window_size_callback(self.win, self.on_size)
-        # Process user inputs
-        # glfw.set_key_callback(self.win, self.process_input)
 
         # useful message to check OpenGL renderer characteristics
         print('OpenGL', GL.glGetString(GL.GL_VERSION).decode() + ', GLSL',
@@ -268,8 +271,6 @@ class Viewer(Node):
 
         self.model = identity()
 
-        self.camera = Camera()
-        self.last_frame = 0.0
 
     def run(self):
         """ Main render loop for this OpenGL window """
@@ -291,6 +292,9 @@ class Viewer(Node):
                           target=self.camera.get_camera_pos()+self.camera.get_camera_front(),
                           up=self.camera.get_camera_up())
 
+            # Update the projection matrix with mouse movements (DISABLED)
+            # projection = perspective(fovy=self.camera.get_fov(), aspect=(1920/1080), near=0.1, far=100.0)
+
             # draw our scene objects
             self.draw(projection, view, identity())
 
@@ -301,14 +305,14 @@ class Viewer(Node):
             glfw.poll_events()
 
             # Get ASDF inputs from user for camera POV
-            self.camera.process_input(window=self.win, delta_time=delta_time)
+            self.camera.process_keyboard_input(window=self.win, delta_time=delta_time)
 
     def on_key(self, _win, key, _scancode, action, _mods):
         """ 'Q' or 'Escape' quits """
         if action == glfw.PRESS or action == glfw.REPEAT:
             if key == glfw.KEY_ESCAPE or key == glfw.KEY_Q:
                 glfw.set_window_should_close(self.win, True)
-            if key == glfw.KEY_W:
+            if key == glfw.KEY_R:
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, next(self.fill_modes))
 
             # call Node.key_handler which calls key_handlers for all drawables
