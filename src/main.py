@@ -26,10 +26,10 @@ def main():
 
     viewer = Viewer(width=1920, height=1080)
 
-    # cube_node = Node(transform=scale(2, 2, 2) @ translate(1, 0, 0) @ rotate((0, 1, 0), 90))
     cube_shader = Shader("texture.vert", "texture.frag")
     terrain_shader = Shader("terrain.vert", "terrain.frag")
     # Simple cube
+    # cube_node = Node(transform=scale(2, 2, 2) @ translate(1, 0, 0) @ rotate((0, 1, 0), 90))
     # mesh_list = load_textured("./../resources/cube/cube.obj", shader=cube_shader)
     # for mesh in mesh_list:
     #     cube_node.add(mesh)
@@ -59,9 +59,18 @@ def main():
         farm_node.add(mesh)
     viewer.add(farm_node)
 
+    # Common tree
+    farm_node = Node(
+        transform=translate(50, -1, 10) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=cube_shader,
+                              tex_file="./../resources/farm/farm_empty.jpg")
+    for mesh in mesh_list:
+        farm_node.add(mesh)
+    viewer.add(farm_node)
+
     # House - 2
     house_node = Node(
-        transform=translate(50, -1, -35) @ scale(0.3, 0.3, 0.3) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+        transform=translate(50, -1, -35) @ scale(0.3, 0.3, 0.3) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
     mesh_list = load_textured("./../resources/house/house_01.FBX", shader=cube_shader,
                               tex_file="./../resources/house/house_01.jpg")
     for mesh in mesh_list:
@@ -79,16 +88,17 @@ def main():
 
     # -------------------------------------------------
     # Farm - full
-    for i in range (0, 14, 7):
-        for j in range(0, 14, 7):
-            farm_node = Node(
-                transform=translate(22+i, -1, -14+j) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1),
-                                                                                                         270))
-            mesh_list = load_textured("./../resources/farm/farm_full.FBX", shader=cube_shader,
-                                      tex_file="./../resources/farm/farm_full.jpg")
-            for mesh in mesh_list:
-                farm_node.add(mesh)
-            viewer.add(farm_node)
+    # for i in range(0, 14, 7):
+    #     for j in range(0, 14, 7):
+    #         farm_node = Node(
+    #             transform=translate(22 + i, -1, -14 + j) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate(
+    #                 (0, 0, 1),
+    #                 270))
+    #         mesh_list = load_textured("./../resources/farm/farm_full.FBX", shader=cube_shader,
+    #                                   tex_file="./../resources/farm/farm_full.jpg")
+    #         for mesh in mesh_list:
+    #             farm_node.add(mesh)
+    #         viewer.add(farm_node)
 
     # -------------------------------------------------
     # Rocks
@@ -119,8 +129,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # start rendering loop
     viewer.run()
