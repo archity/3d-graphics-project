@@ -103,7 +103,7 @@ def build_castle(viewer, shader):
                 "./../resources/castle/Texture/Towers Doors and Windows Texture.jpg",
                 "./../resources/castle/Texture/Ground and Fountain Texture.jpg",
                 "./../resources/castle/Texture/Castle Interior Texture.jpg"]
-    castle_node = Node(transform=translate(0, -1, 200) @ scale(2.0, 2.0, 2.0) @ rotate((0, 1, 0), 180))
+    castle_node = Node(transform=translate(0, -1.7, 200) @ scale(2.0, 2.0, 2.0) @ rotate((0, 1, 0), 180))
     castle_mesh_list = multi_load_textured(file="./../resources/castle/CastleFBX.fbx", shader=shader,
                                            tex_file=tex_list)
     for mesh in castle_mesh_list:
@@ -118,12 +118,12 @@ def build_terrain(viewer, shader):
     grass_node.add(plane)
     viewer.add(grass_node)
 
-    vertices = (4 * np.array(((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32))
-    for i in range(-20, 28):
-        pavement_node = Node(transform=translate(0, -0.9, 0+(4*i)) @ rotate((1, 0, 0), -90))
-        plane = TexturedPlane("./../resources/pavement.jpg", shader, size=2, vertices=vertices)
-        pavement_node.add(plane)
-        viewer.add(pavement_node)
+    width = 10
+    vertices = (np.array(((-width/2, -160, 0), (width/2, -160, 0), (width/2, 80, 0), (-width/2, 80, 0)), np.float32))
+    pavement_node = Node(transform=translate(0, -0.9, 0) @ rotate((1, 0, 0), -90))
+    plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
+    pavement_node.add(plane)
+    viewer.add(pavement_node)
 
 
 def build_church(viewer, shader):
