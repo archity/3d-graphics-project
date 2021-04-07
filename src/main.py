@@ -114,15 +114,22 @@ def build_castle(viewer, shader):
 def build_terrain(viewer, shader):
     # Grass
     grass_node = Node(transform=translate(0, -1, 0) @ rotate((1, 0, 0), -90))
-    plane = TexturedPlane("./../resources/grass.png", shader)
+    plane = TexturedPlane("./../resources/grass.png", shader, size=300)
     grass_node.add(plane)
     viewer.add(grass_node)
+
+    vertices = (4 * np.array(((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32))
+    for i in range(-20, 28):
+        pavement_node = Node(transform=translate(0, -0.9, 0+(4*i)) @ rotate((1, 0, 0), -90))
+        plane = TexturedPlane("./../resources/pavement.jpg", shader, size=2, vertices=vertices)
+        pavement_node.add(plane)
+        viewer.add(pavement_node)
 
 
 def build_church(viewer, shader):
     # Church
     church_node = Node(
-        transform = translate(-100, -8, -150) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 90) @ rotate((1, 0, 0), 270))
+        transform=translate(-108.2, -1, -100) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 90) @ rotate((1, 0, 0), 270))
     church_mesh_list = load_textured(file="./../resources/church/church.FBX", shader=shader,
                                            tex_file="./../resources/church/church_D.jpg")
     for mesh in church_mesh_list:
@@ -138,7 +145,7 @@ def main():
     cube_shader = Shader("texture.vert", "texture.frag")
 
     # Simple cube
-    # cube_node = Node(transform=scale(2, 2, 2) @ translate(1, 0, 0) @ rotate((0, 1, 0), 90))
+    # cube_node = Node(transform=scale(4, 4, 4) @ translate(0, 0.25, 0) @ rotate((0, 1, 0), 90))
     # mesh_list = load_textured("./../resources/cube/cube.obj", shader=cube_shader)
     # for mesh in mesh_list:
     #     cube_node.add(mesh)
@@ -167,8 +174,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    wave_obj.play()
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()

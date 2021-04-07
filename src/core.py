@@ -365,10 +365,11 @@ class Texture:
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, tex_file, shader):
+    def __init__(self, tex_file, shader, size, vertices=None):
 
-        vertices = 300 * np.array(
-            ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
+        if vertices is None:
+            vertices = size * np.array(
+                ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
         faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
         super().__init__(shader, [vertices], faces)
 
