@@ -248,7 +248,7 @@ class Viewer(Node):
         self.trackball = Trackball()
         self.mouse = (0, 0)
 
-        glfw.set_cursor_pos_callback(window=self.win, cbfun=self.camera.process_mouse_movement)
+        # glfw.set_cursor_pos_callback(window=self.win, cbfun=self.camera.process_mouse_movement)
 
         # register event handlers
         glfw.set_key_callback(self.win, self.on_key)
@@ -367,7 +367,7 @@ class TexturedPlane(Mesh):
 
     def __init__(self, tex_file, shader):
 
-        vertices = 1000 * np.array(
+        vertices = 300 * np.array(
             ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
         faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
         super().__init__(shader, [vertices], faces)
