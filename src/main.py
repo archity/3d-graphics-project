@@ -22,49 +22,44 @@ from transform import rotate, translate, scale
 
 
 def build_houses(viewer, shader):
+    # Farm empty - 1
+    farm_node = Node(
+        transform=translate(50, -1, 0) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90))
+    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
+                              tex_file="./../resources/farm/farm_empty.jpg")
+    for mesh in mesh_list:
+        farm_node.add(mesh)
+
     # House - 1
     house_node = Node(
-        transform=translate(50, -1, 0) @ scale(0.3, 0.3, 0.3) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+        transform=scale(0.5, 0.5, 0.5) @ rotate((0, 0, 1), -90))
     mesh_list = load_textured("./../resources/house/big_house.FBX", shader=shader,
                               tex_file="./../resources/house/big_house.jpg")
     for mesh in mesh_list:
         house_node.add(mesh)
-    viewer.add(house_node)
 
-    # Farm empty
+    # Add the house on top of empty farm (hierarchically)
+    farm_node.add(house_node)
+    viewer.add(farm_node)
+
+    # Farm empty - 2
     farm_node = Node(
-        transform=translate(50, -1, 0) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+        transform=translate(50, -1, -35) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90))
     mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
                               tex_file="./../resources/farm/farm_empty.jpg")
     for mesh in mesh_list:
         farm_node.add(mesh)
-    viewer.add(farm_node)
-
-    # Common tree
-    farm_node = Node(
-        transform=translate(50, -1, 10) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
-    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
-                              tex_file="./../resources/farm/farm_empty.jpg")
-    for mesh in mesh_list:
-        farm_node.add(mesh)
-    viewer.add(farm_node)
 
     # House - 2
     house_node = Node(
-        transform=translate(50, -1, -35) @ scale(0.3, 0.3, 0.3) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
+        transform=scale(0.5, 0.5, 0.5) @ rotate((0, 0, 1), 0))
     mesh_list = load_textured("./../resources/house/house_01.FBX", shader=shader,
                               tex_file="./../resources/house/house_01.jpg")
     for mesh in mesh_list:
         house_node.add(mesh)
-    viewer.add(house_node)
 
-    # Farm empty
-    farm_node = Node(
-        transform=translate(50, -1, -35) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
-    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
-                              tex_file="./../resources/farm/farm_empty.jpg")
-    for mesh in mesh_list:
-        farm_node.add(mesh)
+    # Add the house on top of empty farm (hierarchically)
+    farm_node.add(house_node)
     viewer.add(farm_node)
 
     # -------------------------------------------------
