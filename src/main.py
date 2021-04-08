@@ -14,7 +14,7 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np  # all matrix manipulations & OpenGL args
 import assimpcy  # 3D resource loader
 
-from core import Shader, Viewer, load_textured, Node, multi_load_textured, TexturedPlane
+from core import Shader, Viewer, load_textured, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
 from skybox import Skybox
 import simpleaudio as sa
 
@@ -123,10 +123,11 @@ def build_terrain(viewer, shader):
 
 def build_church(viewer, shader):
     # Church
+    light_dir = (-1, -1, -1)
     church_node = Node(
         transform=translate(-108.2, -1, -100) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 90) @ rotate((1, 0, 0), 270))
-    church_mesh_list = load_textured(file="./../resources/church/church.FBX", shader=shader,
-                                           tex_file="./../resources/church/church_D.jpg")
+    church_mesh_list = load_textured_phong_mesh(file="./../resources/church/church.FBX", shader=shader,
+                                           light_dir=light_dir, tex_file="./../resources/church/church_D.jpg")
     for mesh in church_mesh_list:
         church_node.add(mesh)
     viewer.add(church_node)
@@ -138,6 +139,7 @@ def main():
     viewer = Viewer(width=1920, height=1080)
     terrain_shader = Shader("terrain.vert", "terrain.frag")
     cube_shader = Shader("texture.vert", "texture.frag")
+    phong_shader = Shader("phong.vert", "phong.frag")
 
     # Simple cube
     # cube_node = Node(transform=scale(4, 4, 4) @ translate(0, 0.25, 0) @ rotate((0, 1, 0), 90))
@@ -150,7 +152,7 @@ def main():
     build_nature(viewer, shader=cube_shader)
     build_houses(viewer, shader=cube_shader)
     build_castle(viewer, shader=cube_shader)
-    build_church(viewer, shader=cube_shader)
+    build_church(viewer, shader=phong_shader)
 
     # -------------------------------------------------
     # Archer
@@ -169,8 +171,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # start rendering loop
     viewer.run()

@@ -1,13 +1,13 @@
 # Python built-in modules
-import os                           # os function, i.e. checking file status
-import sys                          # for sys.exit
-from itertools import cycle         # allows easy circular choice list
+import os  # os function, i.e. checking file status
+import sys  # for sys.exit
+from itertools import cycle  # allows easy circular choice list
 
 # External, non built-in modules
-import OpenGL.GL as GL              # standard Python OpenGL wrapper
+import OpenGL.GL as GL  # standard Python OpenGL wrapper
 import assimpcy
-import glfw                         # lean window system wrapper for OpenGL
-import numpy as np                  # all matrix manipulations & OpenGL args
+import glfw  # lean window system wrapper for OpenGL
+import numpy as np  # all matrix manipulations & OpenGL args
 
 # our transform functions
 from PIL import Image
@@ -95,6 +95,7 @@ def multi_load_textured(file, shader, tex_file=None):
 # ------------ low level OpenGL object wrappers ----------------------------
 class Shader:
     """ Helper class to create and automatically destroy shader program """
+
     @staticmethod
     def _compile_shader(src, shader_type):
         src = open(src, 'r').read() if os.path.exists(src) else src
@@ -103,7 +104,7 @@ class Shader:
         GL.glShaderSource(shader, src)
         GL.glCompileShader(shader)
         status = GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS)
-        src = ('%3d: %s' % (i+1, l) for i, l in enumerate(src.splitlines()))
+        src = ('%3d: %s' % (i + 1, l) for i, l in enumerate(src.splitlines()))
         if not status:
             log = GL.glGetShaderInfoLog(shader).decode('ascii')
             GL.glDeleteShader(shader)
@@ -131,12 +132,13 @@ class Shader:
 
     def __del__(self):
         GL.glUseProgram(0)
-        if self.glid:                      # if this is a valid shader object
+        if self.glid:  # if this is a valid shader object
             GL.glDeleteProgram(self.glid)  # object dies => destroy GL object
 
 
 class VertexArray:
     """ helper class to create and self destroy OpenGL vertex array objects."""
+
     def __init__(self, attributes, index=None, usage=GL.GL_STATIC_DRAW):
         """ Vertex array from attributes and optional index array. Vertex
             Attributes should be list of arrays with one row per vertex. """
@@ -183,6 +185,7 @@ class VertexArray:
 # ------------  Mesh is a core drawable, can be basis for most objects --------
 class Mesh:
     """ Basic mesh class with attributes passed as constructor arguments """
+
     def __init__(self, shader, attributes, index=None):
         self.shader = shader
         names = ['view', 'projection', 'model']
@@ -203,6 +206,7 @@ class Mesh:
 # ------------  Node is the core drawable for hierarchical scene graphs -------
 class Node:
     """ Scene graph transform and parameter broadcast node """
+
     def __init__(self, children=(), transform=identity()):
         self.transform = transform
         self.children = list(iter(children))
@@ -214,7 +218,7 @@ class Node:
     def draw(self, projection, view, model):
         """ Recursive draw, passing down updated model matrix. """
         for child in self.children:
-            child.draw(projection, view, model @ self.transform )  # TODO TP3: hierarchical update
+            child.draw(projection, view, model @ self.transform)  # TODO TP3: hierarchical update
 
     def key_handler(self, key):
         """ Dispatch keyboard events to children """
@@ -263,14 +267,13 @@ class Viewer(Node):
 
         # initialize GL by setting viewport and default render characteristics
         GL.glClearColor(0.1, 0.1, 0.1, 0.1)
-        GL.glEnable(GL.GL_CULL_FACE)   # backface culling enabled (TP2)
+        GL.glEnable(GL.GL_CULL_FACE)  # backface culling enabled (TP2)
         GL.glEnable(GL.GL_DEPTH_TEST)  # depth test now enabled (TP2)
 
         # cyclic iterator to easily toggle polygon rendering modes
         self.fill_modes = cycle([GL.GL_LINE, GL.GL_POINT, GL.GL_FILL])
 
         self.model = identity()
-
 
     def run(self):
         """ Main render loop for this OpenGL window """
@@ -289,7 +292,7 @@ class Viewer(Node):
 
             # Update the view matrix with camera orientation
             view = lookat(eye=self.camera.get_camera_pos(),
-                          target=self.camera.get_camera_pos()+self.camera.get_camera_front(),
+                          target=self.camera.get_camera_pos() + self.camera.get_camera_front(),
                           up=self.camera.get_camera_up())
 
             # Update the projection matrix with mouse movements (DISABLED)
@@ -338,6 +341,7 @@ class Viewer(Node):
 
 class Texture:
     """ Helper class to create and automatically destroy textures """
+
     def __init__(self, tex_file, wrap_mode=GL.GL_REPEAT, min_filter=GL.GL_LINEAR,
                  mag_filter=GL.GL_LINEAR_MIPMAP_LINEAR):
         self.glid = GL.glGenTextures(1)
@@ -430,3 +434,173 @@ class TexturedMesh(Mesh):
         # leave clean state for easier debugging
         GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
         GL.glUseProgram(0)
+
+
+class TexturedPhongMesh(Mesh):
+    def __init__(self, shader, tex, attributes, faces,
+                 light_dir=(1, -1, 1),  # directional light (in world coords)
+                 k_a=(1, 1, 0), k_d=(1, 1, 0), k_s=(1, 1, 0), s=64.
+                 ):
+        super().__init__(shader, attributes, faces)
+
+        loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
+        self.loc['diffuse_map'] = loc
+
+        # setup texture and upload it to GPU
+        self.texture = tex
+        # ----------------
+        # Lighting stuff
+        print("Light direction:", light_dir)
+        self.light_dir = light_dir
+        self.k_a, self.k_d, self.k_s, self.s = k_a, k_d, k_s, s
+
+        # retrieve OpenGL locations of shader variables at initialization
+        names = ['light_dir', 'k_a', 's', 'k_s', 'k_d', 'w_camera_position']
+
+        loc = {n: GL.glGetUniformLocation(shader.glid, n) for n in names}
+        self.loc.update(loc)
+
+        # self.i = 0
+        # self.x_vals = np.linspace(-10, 10, num=500)
+
+    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
+        GL.glUseProgram(self.shader.glid)
+
+        # texture access setups
+        GL.glActiveTexture(GL.GL_TEXTURE0)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
+        GL.glUniform1i(self.loc['diffuse_map'], 0)
+        super().draw(projection, view, model, primitives)
+
+        GL.glUniform3fv(self.loc['light_dir'], 1, self.light_dir)
+        # setup material parameters
+        GL.glUniform3fv(self.loc['k_a'], 1, self.k_a)
+        GL.glUniform3fv(self.loc['k_d'], 1, self.k_d)
+        GL.glUniform3fv(self.loc['k_s'], 1, self.k_s)
+        GL.glUniform1f(self.loc['s'], max(self.s, 0.001))
+
+        # world camera position for Phong illumination specular component
+        w_camera_position = np.linalg.inv(view)[:, 3]
+        GL.glUniform3fv(self.loc['w_camera_position'], 1, w_camera_position)
+
+        # ----------------
+
+        # leave clean state for easier debugging
+        GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
+        GL.glUseProgram(0)
+
+
+# -------------- Phong rendered Mesh class -----------------------------------
+class PhongMesh(Mesh):
+    """ Mesh with Phong illumination """
+
+    def __init__(self, shader, attributes, index=None,
+                 light_dir=(1, -1, 1),  # directional light (in world coords)
+                 k_a=(0, 0, 0), k_d=(1, 1, 0), k_s=(1, 1, 1), s=16.):
+        super().__init__(shader, attributes, index)
+
+        print(light_dir)
+        self.light_dir = light_dir
+        self.k_a, self.k_d, self.k_s, self.s = k_a, k_d, k_s, s
+
+        # retrieve OpenGL locations of shader variables at initialization
+        names = ['light_dir', 'k_a', 's', 'k_s', 'k_d', 'w_camera_position']
+
+        loc = {n: GL.glGetUniformLocation(shader.glid, n) for n in names}
+        self.loc.update(loc)
+
+        self.i = 0
+        self.x_vals = np.linspace(-10, 10, num=500)
+
+    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
+        GL.glUseProgram(self.shader.glid)
+
+        # self.light_dir = [(item * glfw.get_time()) % 100 for item in self.light_dir]
+        # self.light_dir[0] = self.x_vals[self.i]
+        # self.light_dir = (self.x_vals[self.i], 0, -1)
+        # self.i = (self.i + 1) % 500
+        # setup light parameters
+        GL.glUniform3fv(self.loc['light_dir'], 1, self.light_dir)
+
+        # setup material parameters
+        GL.glUniform3fv(self.loc['k_a'], 1, self.k_a)
+        GL.glUniform3fv(self.loc['k_d'], 1, self.k_d)
+        GL.glUniform3fv(self.loc['k_s'], 1, self.k_s)
+        GL.glUniform1f(self.loc['s'], max(self.s, 0.001))
+
+        # world camera position for Phong illumination specular component
+        w_camera_position = np.linalg.inv(view)[:, 3]
+        GL.glUniform3fv(self.loc['w_camera_position'], 1, w_camera_position)
+
+        super().draw(projection, view, model, primitives)
+
+
+# ------------------------ PhoneMesh loader -------------------------------
+def load_textured_phong_mesh(file, shader, light_dir, tex_file):
+    try:
+        pp = assimpcy.aiPostProcessSteps
+        flags = pp.aiProcess_Triangulate | pp.aiProcess_FlipUVs
+        scene = assimpcy.aiImportFile(file, flags)
+    except assimpcy.all.AssimpError as exception:
+        print('ERROR loading', file + ': ', exception.args[0].decode())
+        return []
+
+    # Note: embedded textures not supported at the moment
+    path = os.path.dirname(file) if os.path.dirname(file) != '' else './'
+    for mat in scene.mMaterials:
+        if not tex_file and 'TEXTURE_BASE' in mat.properties:  # texture token
+            name = os.path.basename(mat.properties['TEXTURE_BASE'])
+            # search texture in file's whole subdir since path often screwed up
+            paths = os.walk(path, followlinks=True)
+            found = [os.path.join(d, f) for d, _, n in paths for f in n
+                     if name.startswith(f) or f.startswith(name)]
+            assert found, 'Cannot find texture %s in %s subtree' % (name, path)
+            tex_file = found[0]
+        if tex_file:
+            mat.properties['diffuse_map'] = Texture(tex_file=tex_file)
+
+    meshes = []
+    for mesh in scene.mMeshes:
+        mat = scene.mMaterials[mesh.mMaterialIndex].properties
+        assert mat['diffuse_map'], "Trying to map using a textureless material"
+        attributes = [mesh.mVertices, mesh.mTextureCoords[0], mesh.mNormals]
+        mesh = TexturedPhongMesh(shader=shader, tex=mat['diffuse_map'], attributes=attributes,
+                                 faces=mesh.mFaces,
+                                 k_d=mat.get('COLOR_DIFFUSE', (0, 0, 0)),
+                                 k_s=mat.get('COLOR_SPECULAR', (0, 0, 0)),
+                                 k_a=mat.get('COLOR_AMBIENT', (0, 0, 0)),
+                                 s=mat.get('SHININESS', 16.),
+                                 light_dir=light_dir
+                                 )
+        meshes.append(mesh)
+
+        size = sum((mesh.mNumFaces for mesh in scene.mMeshes))
+        print('Loaded %s\t(%d meshes, %d faces)' % (file, len(meshes), size))
+        return meshes
+
+
+def load_phong_mesh(file, shader, light_dir, tex_file):
+    """ load resources from file using assimp, return list of ColorMesh """
+    try:
+        pp = assimpcy.aiPostProcessSteps
+        flags = pp.aiProcess_Triangulate | pp.aiProcess_GenSmoothNormals
+        scene = assimpcy.aiImportFile(file, flags)
+    except assimpcy.all.AssimpError as exception:
+        print('ERROR loading', file + ': ', exception.args[0].decode())
+        return []
+
+    # prepare mesh nodes
+    meshes = []
+    for mesh in scene.mMeshes:
+        mat = scene.mMaterials[mesh.mMaterialIndex].properties
+        mesh = PhongMesh(shader, [mesh.mVertices, mesh.mNormals], mesh.mFaces,
+                         k_d=mat.get('COLOR_DIFFUSE', (1, 1, 1)),
+                         k_s=mat.get('COLOR_SPECULAR', (1, 1, 1)),
+                         k_a=mat.get('COLOR_AMBIENT', (0, 0, 0)),
+                         s=mat.get('SHININESS', 16.),
+                         light_dir=light_dir)
+        meshes.append(mesh)
+
+    size = sum((mesh.mNumFaces for mesh in scene.mMeshes))
+    print('Loaded %s\t(%d meshes, %d faces)' % (file, len(meshes), size))
+    return meshes
