@@ -478,7 +478,7 @@ class PhongMesh(Mesh):
 class TexturedPhongMesh:
     def __init__(self, shader, tex, attributes, faces,
                  light_dir=None,  # directional light (in world coords)
-                 k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0), s=16.
+                 k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0), s=64.
                  ):
         # super().__init__(shader, tex, attributes, faces)
 
@@ -486,13 +486,18 @@ class TexturedPhongMesh:
         self.texture = tex
         self.vertex_array = VertexArray(attributes=attributes, index=faces)
         self.shader = shader
+
+        self.k_a = k_a
+        self.k_d = k_d
+        self.k_s = k_s
+        self.s = s
         # ----------------
 
     def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
         GL.glUseProgram(self.shader.glid)
 
         # projection geometry
-        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap']
+        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's']
         loc = {n: GL.glGetUniformLocation(self.shader.glid, n) for n in names}
 
         # model3x3 = model[0:3, 0:3]
@@ -501,6 +506,11 @@ class TexturedPhongMesh:
         GL.glUniformMatrix4fv(loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(loc['projection'], 1, True, projection)
         GL.glUniformMatrix4fv(loc['model'], 1, True, model)
+
+        GL.glUniform3fv(loc['k_a'], 1, self.k_a)
+        GL.glUniform3fv(loc['k_d'], 1, self.k_d)
+        GL.glUniform3fv(loc['k_s'], 1, self.k_s)
+        GL.glUniform1f(loc['s'], max(self.s, 0.001))
         # GL.glUniformMatrix4fv(loc['nit_matrix'], 1, True, nit_matrix)
 
         # ----------------
@@ -518,7 +528,7 @@ class TexturedPhongMesh:
 
 # ------------------------ PhoneMesh loader -------------------------------
 
-def load_textured_phong_mesh(file, shader, tex_file):
+def load_textured_phong_mesh(file, shader, tex_file, k_a, k_d, k_s, s):
     try:
         pp = assimpcy.aiPostProcessSteps
         flags = pp.aiProcess_Triangulate | pp.aiProcess_FlipUVs
@@ -547,7 +557,8 @@ def load_textured_phong_mesh(file, shader, tex_file):
         assert mat['diffuse_map'], "Trying to map using a textureless material"
         attributes = [mesh.mVertices, mesh.mTextureCoords[0], mesh.mNormals]
         mesh = TexturedPhongMesh(shader=shader, tex=mat['diffuse_map'], attributes=attributes,
-                                 faces=mesh.mFaces)
+                                 faces=mesh.mFaces,
+                                 k_d=k_d, k_a=k_a, k_s=k_s, s=s)
         meshes.append(mesh)
 
         size = sum((mesh.mNumFaces for mesh in scene.mMeshes))

@@ -11,11 +11,11 @@ in vec3 w_position, w_normal;   // in world coodinates
 //uniform vec3 light_dir;
 
 // material properties
-//uniform vec3 k_d;
-//uniform vec3 k_a;
-//uniform vec3 k_s;
+uniform vec3 k_d;
+uniform vec3 k_a;
+uniform vec3 k_s;
 //// uniform vec3 r;
-//uniform float s;
+uniform float s;
 
 // world camera position
 uniform vec3 w_camera_position;
@@ -29,10 +29,10 @@ void main() {
     vec3 r = reflect(-l, n);
     vec3 v = normalize(w_camera_position - w_position);
     // float s = 10;
-    vec3 k_a = vec3(1, 1, 1);
-    vec3 k_d = vec3(.6, .6, .6);
-    vec3 k_s = vec3(0.1, 0.1, 0.1);
-    float s = 4; // size of the highlights
+    //vec3 k_a = vec3(1, 1, 1);
+    //vec3 k_d = vec3(1, 1, 1);
+    //vec3 k_s = vec3(.1, .1, .1);
+    //float s = 16; // size of the highlights
     // 1. The Lambertian model
     //out_color = vec4(k_d * max(0, dot(n, l)) * vec3(texture(diffuse_map, frag_uv)), 1);
 
