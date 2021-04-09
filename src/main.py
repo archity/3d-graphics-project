@@ -25,7 +25,7 @@ def build_houses(viewer, shader):
     # Farm empty - 1
     farm_node = Node(
         transform=translate(50, -1, 0) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90))
-    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
+    mesh_list = load_textured_phong_mesh("./../resources/farm/farm_empty.FBX", shader=shader,
                               tex_file="./../resources/farm/farm_empty.jpg")
     for mesh in mesh_list:
         farm_node.add(mesh)
@@ -33,7 +33,7 @@ def build_houses(viewer, shader):
     # House - 1
     house_node = Node(
         transform=scale(0.5, 0.5, 0.5) @ rotate((0, 0, 1), -90))
-    mesh_list = load_textured("./../resources/house/big_house.FBX", shader=shader,
+    mesh_list = load_textured_phong_mesh("./../resources/house/big_house.FBX", shader=shader,
                               tex_file="./../resources/house/big_house.jpg")
     for mesh in mesh_list:
         house_node.add(mesh)
@@ -45,7 +45,7 @@ def build_houses(viewer, shader):
     # Farm empty - 2
     farm_node = Node(
         transform=translate(50, -1, -35) @ scale(0.5, 0.5, 0.5) @ rotate((1, 0, 0), -90))
-    mesh_list = load_textured("./../resources/farm/farm_empty.FBX", shader=shader,
+    mesh_list = load_textured_phong_mesh(file="./../resources/farm/farm_empty.FBX", shader=shader,
                               tex_file="./../resources/farm/farm_empty.jpg")
     for mesh in mesh_list:
         farm_node.add(mesh)
@@ -53,7 +53,7 @@ def build_houses(viewer, shader):
     # House - 2
     house_node = Node(
         transform=scale(0.5, 0.5, 0.5) @ rotate((0, 0, 1), 0))
-    mesh_list = load_textured("./../resources/house/house_01.FBX", shader=shader,
+    mesh_list = load_textured_phong_mesh(file="./../resources/house/house_01.FBX", shader=shader,
                               tex_file="./../resources/house/house_01.jpg")
     for mesh in mesh_list:
         house_node.add(mesh)
@@ -83,12 +83,64 @@ def build_nature(viewer, shader):
     # Rocks
     rock_node = Node(
         transform=translate(30, -1, -20) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
-    mesh_list = load_textured("./../resources/rock/rock_02.FBX", shader=shader,
+    mesh_list = load_textured(file="./../resources/rock/rock_02.FBX", shader=shader,
                               tex_file="./../resources/rock/mountain_rock.jpg")
     for mesh in mesh_list:
         rock_node.add(mesh)
     viewer.add(rock_node)
+
+    # House Tree 1
+    # size = 0.3
+    # tree_node = Node(
+    #     transform=translate(30, -1, -14) @ scale(size, size, size) @ rotate((1, 0, 0), 0))
+    # mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
+    #                             tex_file="./../resources/tree/lowPolyTree.png")
+    # for mesh in mesh_list:
+    #     tree_node.add(mesh)
+    # viewer.add(tree_node)
+    #
+    # House Tree 2
+    # tree_node = Node(
+    #     transform=translate(30, -1, -8) @ scale(size, size, size) @ rotate((0, 1, 0), 45))
+    # mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
+    #                            tex_file="./../resources/tree/lowPolyTree.png")
+    # for mesh in mesh_list:
+    #     tree_node.add(mesh)
+    # viewer.add(tree_node)
+
     # -------------------------------------------------
+    # Very high poly tree
+    # tex_list = ["./../resources/tree/nice_tree/leaf.png",
+    #             "./../resources/tree/nice_tree/bark.jpg",
+    #             "./../resources/tree/nice_tree/leaf.png",
+    #             "./../resources/tree/nice_tree/leaf.png",
+    #             ]
+    # size_conetree = 0.02
+    # tree_node = Node(
+    #     transform=translate(-5, -1, -8) @ scale(size_conetree, size_conetree, size_conetree) @ rotate((0, 1, 0), 45))
+    # mesh_list = multi_load_textured(file="./../resources/tree/nice_tree/nice_tree.obj", shader=shader,
+    #                                      tex_file=tex_list)
+    # for mesh in mesh_list:
+    #     tree_node.add(mesh)
+    # viewer.add(tree_node)
+    # -------------------------------------------------
+    # Pathway trees
+    for i in range(-70, 160, 40):
+        tree_node = Node(
+            transform=translate(5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
+        mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
+                                             tex_file="./../resources/tree/lowPolyTree.png")
+        for mesh in mesh_list:
+            tree_node.add(mesh)
+        viewer.add(tree_node)
+
+        tree_node = Node(
+            transform=translate(-5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
+        mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
+                                             tex_file="./../resources/tree/lowPolyTree.png")
+        for mesh in mesh_list:
+            tree_node.add(mesh)
+        viewer.add(tree_node)
 
 
 def build_castle(viewer, shader):
@@ -123,11 +175,11 @@ def build_terrain(viewer, shader):
 
 def build_church(viewer, shader):
     # Church
-    light_dir = (-1, -1, -1)
+    # light_dir = (-1, -1, -1)
     church_node = Node(
         transform=translate(-108.2, -1, -100) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 90) @ rotate((1, 0, 0), 270))
     church_mesh_list = load_textured_phong_mesh(file="./../resources/church/church.FBX", shader=shader,
-                                           light_dir=light_dir, tex_file="./../resources/church/church_D.jpg")
+                                           tex_file="./../resources/church/church_D.jpg")
     for mesh in church_mesh_list:
         church_node.add(mesh)
     viewer.add(church_node)
@@ -140,7 +192,7 @@ def main():
     terrain_shader = Shader("terrain.vert", "terrain.frag")
     cube_shader = Shader("texture.vert", "texture.frag")
     phong_shader = Shader("phong.vert", "phong.frag")
-
+    # phong_shader2 = Shader("phong.vert", "phong.frag")
     # Simple cube
     # cube_node = Node(transform=scale(4, 4, 4) @ translate(0, 0.25, 0) @ rotate((0, 1, 0), 90))
     # mesh_list = load_textured("./../resources/cube/cube.obj", shader=cube_shader)
@@ -149,8 +201,8 @@ def main():
     # viewer.add(cube_node)
 
     build_terrain(viewer, shader=terrain_shader)
-    build_nature(viewer, shader=cube_shader)
-    build_houses(viewer, shader=cube_shader)
+    build_nature(viewer, shader=phong_shader)
+    build_houses(viewer, shader=phong_shader)
     build_castle(viewer, shader=cube_shader)
     build_church(viewer, shader=phong_shader)
 
