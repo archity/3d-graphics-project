@@ -1,6 +1,18 @@
 # 3D Graphics Project
 Medieval scene based project for the 3D Graphics course of M1 MoSIG
 
+## Installation requirements
+
+The following libraries need to be installed for running the application. They can also be found in `requirements.txt` file, and installed using `pip install -r requirements.txt`
+```
+AssimpCy
+glfw
+numpy
+Pillow
+PyOpenGL
+PyOpenGL-accelerate
+simpleaudio
+```
 ## Camera
 
 We defined a camera class which would help us with managing all the variables and functions associated with moving around the camera POV in our scene.
