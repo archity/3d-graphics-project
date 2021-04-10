@@ -235,6 +235,8 @@ class Viewer(Node):
     def __init__(self, width=640, height=480):
         super().__init__()
 
+        self.width = width
+        self.height = height
         self.camera = Camera()
         self.last_frame = 0.0
 
@@ -257,8 +259,8 @@ class Viewer(Node):
 
         # register event handlers
         glfw.set_key_callback(self.win, self.on_key)
-        glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
-        glfw.set_scroll_callback(self.win, self.on_scroll)
+        # glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
+        # glfw.set_scroll_callback(self.win, self.on_scroll)
         glfw.set_window_size_callback(self.win, self.on_size)
 
         # useful message to check OpenGL renderer characteristics
@@ -282,9 +284,9 @@ class Viewer(Node):
             # clear draw buffer and depth buffer (<-TP2)
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
-            win_size = glfw.get_window_size(self.win)
-            view = self.trackball.view_matrix()
-            projection = self.trackball.projection_matrix(win_size)
+            # win_size = glfw.get_window_size(self.win)
+            # view = self.trackball.view_matrix()
+            # projection = self.trackball.projection_matrix(win_size)
 
             # Calculate the time between last rendered frame
             current_frame = glfw.get_time()
@@ -296,8 +298,8 @@ class Viewer(Node):
                           target=self.camera.get_camera_pos() + self.camera.get_camera_front(),
                           up=self.camera.get_camera_up())
 
-            # Update the projection matrix with mouse movements (DISABLED)
-            # projection = perspective(fovy=self.camera.get_fov(), aspect=(1920/1080), near=0.1, far=100.0)
+            # Update the projection matrix
+            projection = perspective(fovy=self.camera.get_fov(), aspect=(self.width/self.height), near=0.1, far=500.0)
 
             # draw our scene objects
             self.draw(projection, view, identity())
