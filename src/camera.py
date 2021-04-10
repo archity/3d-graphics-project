@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import glfw  # lean window system wrapper for OpenGL
 import OpenGL.GL as GL  # standard Python OpenGL wrapper
@@ -27,16 +29,24 @@ class Camera:
         # self.update_camera_vectors()
 
     def process_keyboard_input(self, window, delta_time):
-        camera_speed = 80 * delta_time
+        camera_speed = 20 * delta_time
         if glfw.get_key(window=window, key=glfw.KEY_W):
-            self.camera_pos += camera_speed * self.camera_front
+            temp = copy.deepcopy(self.camera_front)
+            temp[1] = 0
+            self.camera_pos += camera_speed * temp
         if glfw.get_key(window=window, key=glfw.KEY_S):
-            self.camera_pos -= camera_speed * self.camera_front
+            temp = copy.deepcopy(self.camera_front)
+            temp[1] = 0
+            self.camera_pos -= camera_speed * temp
         if glfw.get_key(window=window, key=glfw.KEY_A):
-            self.camera_pos -= normalized(np.cross(self.camera_front, self.up)) * camera_speed
+            temp = copy.deepcopy(self.camera_front)
+            temp[1] = 0
+            self.camera_pos -= normalized(np.cross(temp, self.up)) * camera_speed
         if glfw.get_key(window=window, key=glfw.KEY_D):
-            self.camera_pos += normalized(np.cross(self.camera_front, self.up)) * camera_speed
-
+            temp = copy.deepcopy(self.camera_front)
+            temp[1] = 0
+            self.camera_pos += normalized(np.cross(temp, self.up)) * camera_speed
+        # print("Position: ", self.camera_pos, "Direction: ", self.camera_front)
         if glfw.get_key(window=window, key=glfw.KEY_LEFT):
             if self.camera_front[2] >= 0 and self.camera_front[0] >= 0:
                 self.camera_front[2] -= self.sensitivity
@@ -71,6 +81,15 @@ class Camera:
                 self.camera_front[2] -= self.sensitivity
                 self.camera_front[0] -= self.sensitivity
                 self.camera_front = normalized(self.camera_front)
+        if glfw.get_key(window=window, key=glfw.KEY_UP):
+            if self.camera_front[1] < 1:
+                self.camera_front[1] += self.sensitivity
+                # self.camera_front = normalized(self.camera_front)
+        if glfw.get_key(window=window, key=glfw.KEY_DOWN):
+            if self.camera_front[1] > 0:
+                self.camera_front[1] -= self.sensitivity
+                # self.camera_front = normalized(self.camera_front)
+
 
     # def process_mouse_movement(self, window, xpos, ypos):
     #     # (DISABLED)
