@@ -228,7 +228,7 @@ def build_castle(viewer, shader):
                 "./../resources/castle/Texture/Ground and Fountain Texture.jpg",
                 "./../resources/castle/Texture/Castle Interior Texture.jpg"]
     castle_node = Node(transform=translate(0, -1.7, 200) @ scale(2.0, 2.0, 2.0) @ rotate((0, 1, 0), 180))
-    castle_mesh_list = multi_load_textured(file="./../resources/castle/CastleFBX.fbx", shader=shader,
+    castle_mesh_list = multi_load_textured(file="./../resources/castle/castle_cull_fixed.fbx", shader=shader,
                                            tex_file=tex_list)
     for mesh in castle_mesh_list:
         castle_node.add(mesh)
@@ -236,20 +236,21 @@ def build_castle(viewer, shader):
 
     # Pond
     # Load pond's multiple textures one by one
-
-    tex_list2 = ["./../resources/Test/00000000-0000-2222-3333-100000001027.jpg",
-                 "./../resources/Test/00000000-0000-2222-3333-100000001042.jpg",
-                 "./../resources/Test/abb783e6-3e93-26c0-248a-247666855da3.jpg",
-                 "./../resources/Test/aea4776c-07fb-4104-b781-cdd4792fbaee.jpg",
-                 "./../resources/Test/b8d3965a-ad78-bf43-699b-bff8eca6c975.jpg"]
-    pond_node = Node(
-        transform=translate(-50, -1, 40) @ scale(4.2, 4.2, 4.2))
-    mesh_list = multi_load_textured(file="./../resources/Test/pond/printable pond.dae", shader=shader,
-                                    tex_file=tex_list2)
-
-    for mesh in mesh_list:
-        pond_node.add(mesh)
-    viewer.add(pond_node)
+    # tex_list2 = ["./../resources/Test/pond/aea4776c-07fb-4104-b781-cdd4792fbaee.jpg",
+    #              "./../resources/Test/pond/abb783e6-3e93-26c0-248a-247666855da3.jpg",
+    #              "./../resources/Test/pond/b8d3965a-ad78-bf43-699b-bff8eca6c975.jpg",
+    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001042.jpg",
+    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001027.jpg",
+    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001027.jpg"
+    #              ]
+    # pond_node = Node(
+    #     transform=translate(-50, 2, 40) @ scale(4.2, 4.2, 4.2))
+    # mesh_list = multi_load_textured(file="./../resources/Test/pond/pond_wo-cube-base.fbx", shader=shader,
+    #                                 tex_file=tex_list2)
+    #
+    # for mesh in mesh_list:
+    #     pond_node.add(mesh)
+    # viewer.add(pond_node)
 
     # Castle 2
     # tex_list = 30*["./../resources/castle/Brick1.jpg"]
@@ -332,8 +333,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    wave_obj.play()
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()
