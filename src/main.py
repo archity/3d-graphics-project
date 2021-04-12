@@ -193,10 +193,21 @@ def build_castle(viewer, shader):
     viewer.add(castle_node)
 
 
+    # Castle 2
+    # tex_list = 30*["./../resources/castle/Brick1.jpg"]
+    # castle_node = Node(transform=translate(100, 10, 100) @ scale(1.0, 1.0, 1.0) @ rotate((0, 1, 0), 0))
+    # castle_mesh_list = multi_load_textured(file="./../resources/castle/castle_only.fbx", shader=shader,
+    #                                        tex_file=tex_list)
+    # for mesh in castle_mesh_list:
+    #     castle_node.add(mesh)
+    # viewer.add(castle_node)
+
+
+
 def build_terrain(viewer, shader):
     # Grass
     grass_node = Node(transform=translate(0, -1, 0) @ rotate((1, 0, 0), -90))
-    plane = TexturedPlane("./../resources/grass.png", shader, size=300)
+    plane = TexturedPlane("./../resources/grass.png", shader, size=1000)
     grass_node.add(plane)
     viewer.add(grass_node)
 

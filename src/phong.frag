@@ -22,8 +22,14 @@ uniform vec3 w_camera_position;
 
 out vec4 out_color;
 
+
+in float visibility;
+uniform vec3 skyColor;
+
 void main() {
-    
+
+    vec4 color = vec4(0.5, 0.5, 0.5, 1);
+
     vec3 n = normalize(w_normal);
     vec3 l = normalize(-vec3(-1, -1, -1));
     vec3 r = reflect(-l, n);
@@ -41,6 +47,8 @@ void main() {
     vec3 specular_color = k_s * pow(max(dot(r, v), 0), s) * vec3(texture(diffuse_map, frag_uv));
     vec3 ambient_color = k_a * vec3(texture(diffuse_map, frag_uv));
     out_color = vec4(ambient_color, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
+
+    out_color = mix(color, out_color, visibility);
     //vec3(texture(diffuse_map, frag_uv))
 
     // 3. Point Light

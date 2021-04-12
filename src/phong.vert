@@ -12,17 +12,33 @@ uniform mat4 model, view, projection;
 out vec3 w_position, w_normal;   // in world coordinates
 out vec2 frag_uv;
 
+
+const float density = 0.007;
+const float gradient = 1.5;
+
+out float visibility;
+
+
 void main() {
-    vec4 w_position4 = model * vec4(position, 1.0);
-    gl_Position = projection * view * w_position4;
+
+    vec4 worldPosition = model * vec4(position, 1.0);
+    vec4 positionRelativeToCam = view * worldPosition;
+
+    //vec4 w_position4 = model * vec4(position, 1.0);
+    gl_Position = projection * positionRelativeToCam;
     frag_uv = vec2(uvs.x, uvs.y);
 
     // compute the vertex position and normal in world or view coordinates
-    w_position =  w_position4.xyz / w_position4.w;
+    w_position =  worldPosition.xyz / worldPosition.w;
 
     // fragment normal in world coordinates
     mat3 nit_matrix = transpose(inverse(mat3(model)));
     w_normal = normalize(nit_matrix * normal);
 
     // w_normal = (model * vec4(normal, 0)).xyz;
+
+
+    float distance = length(positionRelativeToCam.xyz);
+    visibility = exp(-pow((distance * density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 }
