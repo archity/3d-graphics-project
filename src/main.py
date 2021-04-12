@@ -166,7 +166,7 @@ def build_nature(viewer, shader):
     #     tree_node.add(mesh)
     # viewer.add(tree_node)
     #
-    # House Tree 2
+    # # House Tree 2
     # tree_node = Node(
     #     transform=translate(30, -1, -8) @ scale(size, size, size) @ rotate((0, 1, 0), 45))
     # mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
@@ -229,7 +229,12 @@ def build_castle(viewer, shader):
                 "./../resources/castle/Texture/Castle Interior Texture.jpg"]
     castle_node = Node(transform=translate(0, -1.7, 200) @ scale(2.0, 2.0, 2.0) @ rotate((0, 1, 0), 180))
     castle_mesh_list = multi_load_textured(file="./../resources/castle/castle_cull_fixed.fbx", shader=shader,
-                                           tex_file=tex_list)
+                                           tex_file=tex_list,
+                                           k_a=(.5, .5, .5),
+                                           k_d=(1, 1, 1),
+                                           k_s=(.1, .1, .1),
+                                           s=64
+                                           )
     for mesh in castle_mesh_list:
         castle_node.add(mesh)
     viewer.add(castle_node)
@@ -313,7 +318,7 @@ def main():
     build_terrain(viewer, shader=terrain_shader)
     build_nature(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
-    build_castle(viewer, shader=cube_shader)
+    build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
 
     # -------------------------------------------------

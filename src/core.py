@@ -54,7 +54,7 @@ def load_textured(file, shader, tex_file=None):
     return meshes
 
 
-def multi_load_textured(file, shader, tex_file=None):
+def multi_load_textured(file, shader, tex_file, k_a, k_d, k_s, s):
     """ load resources from file using assimp, return list of TexturedMesh """
     try:
         pp = assimpcy.aiPostProcessSteps
@@ -63,7 +63,7 @@ def multi_load_textured(file, shader, tex_file=None):
     except assimpcy.all.AssimpError as exception:
         print('ERROR loading', file + ': ', exception.args[0].decode())
         return []
-    print(scene.mNumMaterials)
+    print("materials: ", scene.mNumMaterials)
     # Note: embedded textures not supported at the moment
     path = os.path.dirname(file) if os.path.dirname(file) != '' else './'
     for index, mat in enumerate(scene.mMaterials):
@@ -84,8 +84,9 @@ def multi_load_textured(file, shader, tex_file=None):
     for mesh in scene.mMeshes:
         mat = scene.mMaterials[mesh.mMaterialIndex].properties
         assert mat['diffuse_map'], "Trying to map using a textureless material"
-        attributes = [mesh.mVertices, mesh.mTextureCoords[0]]
-        mesh = TexturedMesh(shader, mat['diffuse_map'], attributes, mesh.mFaces)
+        attributes = [mesh.mVertices, mesh.mTextureCoords[0], mesh.mNormals]
+        mesh = TexturedPhongMesh(shader, mat['diffuse_map'], attributes, mesh.mFaces,
+                                 k_d=k_d, k_a=k_a, k_s=k_s, s=s)
         meshes.append(mesh)
 
     size = sum((mesh.mNumFaces for mesh in scene.mMeshes))
