@@ -104,15 +104,57 @@ def build_nature(viewer, shader):
     rock_node = Node(
         transform=translate(30, -1, -20) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
     mesh_list = load_textured_phong_mesh(file="./../resources/rock/rock_02.FBX", shader=shader,
-                              tex_file="./../resources/rock/mountain_rock.jpg",
-                              k_a=(.4, .4, .4),
-                              k_d=(1.2, 1.2, 1.2),
-                              k_s=(.2, .2, .2),
-                              s=4
-                              )
+                                         tex_file="./../resources/rock/mountain_rock.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
     for mesh in mesh_list:
         rock_node.add(mesh)
     viewer.add(rock_node)
+
+    # Graveyard Grass
+    graveyard_grass_node = Node(
+        transform=translate(-60, -1, -20) @ scale(0.1, 0.1, 0.1))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/1/2/Demo_Scene.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/1/2/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_grass_node.add(mesh)
+    viewer.add(graveyard_grass_node)
+
+    # Graveyard Cross 1
+    graveyard_cross1_node = Node(
+        transform=translate(-60, -1, -20) @ scale(0.15, 0.15, 0.15) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave3.fbx", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross1_node.add(mesh)
+    viewer.add(graveyard_cross1_node)
+
+    # Graveyard Cross 2
+    graveyard_cross2_node = Node(
+        transform=translate(-50, -1, -10) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross2_node.add(mesh)
+    viewer.add(graveyard_cross2_node)
 
     # House Tree 1
     # size = 0.3
@@ -192,6 +234,22 @@ def build_castle(viewer, shader):
         castle_node.add(mesh)
     viewer.add(castle_node)
 
+    # Pond
+    # Load pond's multiple textures one by one
+
+    tex_list2 = ["./../resources/Test/00000000-0000-2222-3333-100000001027.jpg",
+                 "./../resources/Test/00000000-0000-2222-3333-100000001042.jpg",
+                 "./../resources/Test/abb783e6-3e93-26c0-248a-247666855da3.jpg",
+                 "./../resources/Test/aea4776c-07fb-4104-b781-cdd4792fbaee.jpg",
+                 "./../resources/Test/b8d3965a-ad78-bf43-699b-bff8eca6c975.jpg"]
+    pond_node = Node(
+        transform=translate(-50, -1, 40) @ scale(4.2, 4.2, 4.2))
+    mesh_list = multi_load_textured(file="./../resources/Test/pond/printable pond.dae", shader=shader,
+                                    tex_file=tex_list2)
+
+    for mesh in mesh_list:
+        pond_node.add(mesh)
+    viewer.add(pond_node)
 
     # Castle 2
     # tex_list = 30*["./../resources/castle/Brick1.jpg"]
@@ -201,7 +259,6 @@ def build_castle(viewer, shader):
     # for mesh in castle_mesh_list:
     #     castle_node.add(mesh)
     # viewer.add(castle_node)
-
 
 
 def build_terrain(viewer, shader):
