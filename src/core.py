@@ -157,7 +157,10 @@ class VertexArray:
                 # bind a new vbo, upload its data to GPU, declare size and type
                 self.buffers.append(GL.glGenBuffers(1))
                 data = np.array(data, np.float32, copy=False)  # ensure format
+                # print(data.shape)
                 nb_primitives, size = data.shape
+                # print("nb_primitives:", nb_primitives)
+                # print("size:", size)
                 GL.glEnableVertexAttribArray(loc)
                 GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.buffers[-1])
                 GL.glBufferData(GL.GL_ARRAY_BUFFER, data, usage)
@@ -173,6 +176,7 @@ class VertexArray:
             GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, index_buffer, usage)
             self.draw_command = GL.glDrawElements
             self.arguments = (index_buffer.size, GL.GL_UNSIGNED_INT, None)
+        # GL.glBindVertexArray(0)
 
     def execute(self, primitive):
         """ draw a vertex array, either as direct array or indexed array """
@@ -375,11 +379,43 @@ class TexturedPlane(Mesh):
 
     def __init__(self, tex_file, shader, size, vertices=None):
 
-        if vertices is None:
-            vertices = size * np.array(
-                ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
-        faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
-        super().__init__(shader, [vertices], faces)
+        self.SIZE = 1000
+        self.VERTEX_COUNT = 128
+        vertices = []
+        normals = []
+        texture_coords = []
+
+        for i in range(0, self.VERTEX_COUNT):
+            for j in range(0, self.VERTEX_COUNT):
+                # (x, y, z)
+                vertices.append([(j / (self.VERTEX_COUNT - 1)) * self.SIZE, 0, (i / (self.VERTEX_COUNT - 1)) * self.SIZE])
+                normals.append([0, 1, 0])
+                texture_coords.append([j / (self.VERTEX_COUNT - 1), i / (self.VERTEX_COUNT - 1)])
+
+        # Convert to numpy array list
+        vertices = np.array(vertices)
+        normals = np.array(normals)
+        texture_coords = np.array(texture_coords)
+
+        indices = []
+        for gz in range(0, self.VERTEX_COUNT-1):
+            for gx in range(0, self.VERTEX_COUNT-1):
+                top_left = (gz * self.VERTEX_COUNT) + gx
+                top_right = top_left + 1
+                bottom_left = ((gz + 1) * self.VERTEX_COUNT) + gx
+                bottom_right = bottom_left + 1
+                indices.append([top_left, bottom_left, top_right, top_right, bottom_left, bottom_right])
+
+        indices = np.array(indices)
+
+
+
+        # if vertices is None:
+            # vertices = size * np.array(
+            #     ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
+        # faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
+        # normals = np.array((0, 1, 0), np.float32)
+        super().__init__(shader, [vertices, texture_coords, normals], indices)
 
         loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
         self.loc['diffuse_map'] = loc

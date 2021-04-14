@@ -14,11 +14,12 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np  # all matrix manipulations & OpenGL args
 import assimpcy  # 3D resource loader
 
-from core import Shader, Viewer, load_textured, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
+from core import Shader, Viewer, Texture, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
 from skybox import Skybox
 import simpleaudio as sa
 
 from transform import rotate, translate, scale
+from terrain import Terrain
 
 
 def build_houses(viewer, shader):
@@ -269,18 +270,18 @@ def build_castle(viewer, shader):
 
 def build_terrain(viewer, shader):
     # Grass
-    grass_node = Node(transform=translate(0, -1, 0) @ rotate((1, 0, 0), -90))
+    grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
     plane = TexturedPlane("./../resources/grass.png", shader, size=1000)
     grass_node.add(plane)
     viewer.add(grass_node)
 
-    width = 10
-    vertices = (
-        np.array(((-width / 2, -160, 0), (width / 2, -160, 0), (width / 2, 80, 0), (-width / 2, 80, 0)), np.float32))
-    pavement_node = Node(transform=translate(0, -0.9, 0) @ rotate((1, 0, 0), -90))
-    plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
-    pavement_node.add(plane)
-    viewer.add(pavement_node)
+    # width = 10
+    # vertices = (
+    #     np.array(((-width / 2, -160, 0), (width / 2, -160, 0), (width / 2, 80, 0), (-width / 2, 80, 0)), np.float32))
+    # pavement_node = Node(transform=translate(0, -0.9, 0) @ rotate((1, 0, 0), -90))
+    # plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
+    # pavement_node.add(plane)
+    # viewer.add(pavement_node)
 
 
 def build_church(viewer, shader):
@@ -320,6 +321,11 @@ def main():
     build_houses(viewer, shader=phong_shader)
     build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
+
+    # grass_node = Node(transform=translate(0, -1, 0) @ rotate((1, 0, 0), -90))
+    # terrain = Terrain(grid_x=0, grid_z=0, texture=Texture(tex_file="./../resources/grass.png"), shader=terrain_shader)
+    # grass_node.add(terrain)
+    # viewer.add(grass_node)
 
     # -------------------------------------------------
     # Archer

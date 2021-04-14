@@ -28,7 +28,7 @@ uniform vec3 skyColor;
 
 void main() {
 
-    vec4 color = vec4(0.5, 0.5, 0.5, 1);
+    vec4 color = vec4(0.6, 0.78, 0.70, 1);
 
     vec3 n = normalize(w_normal);
     vec3 l = normalize(-vec3(-1, -1, -1));
