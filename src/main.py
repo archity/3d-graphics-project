@@ -262,7 +262,12 @@ def build_castle(viewer, shader):
     # tex_list = 30*["./../resources/castle/Brick1.jpg"]
     # castle_node = Node(transform=translate(100, 10, 100) @ scale(1.0, 1.0, 1.0) @ rotate((0, 1, 0), 0))
     # castle_mesh_list = multi_load_textured(file="./../resources/castle/castle_only.fbx", shader=shader,
-    #                                        tex_file=tex_list)
+    #                                        tex_file=tex_list,
+    #                                        k_a=(1, 1, 1),
+    #                                        k_d=(.6, .6, .6),
+    #                                        k_s=(.1, .1, .1),
+    #                                        s=4
+    #                                        )
     # for mesh in castle_mesh_list:
     #     castle_node.add(mesh)
     # viewer.add(castle_node)
@@ -275,6 +280,7 @@ def build_terrain(viewer, shader):
     grass_node.add(plane)
     viewer.add(grass_node)
 
+    # TODO: Build road
     # width = 10
     # vertices = (
     #     np.array(((-width / 2, -160, 0), (width / 2, -160, 0), (width / 2, 80, 0), (-width / 2, 80, 0)), np.float32))
@@ -322,11 +328,6 @@ def main():
     build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
 
-    # grass_node = Node(transform=translate(0, -1, 0) @ rotate((1, 0, 0), -90))
-    # terrain = Terrain(grid_x=0, grid_z=0, texture=Texture(tex_file="./../resources/grass.png"), shader=terrain_shader)
-    # grass_node.add(terrain)
-    # viewer.add(grass_node)
-
     # -------------------------------------------------
     # Archer
     # archer_node = Node(
@@ -344,8 +345,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # start rendering loop
     viewer.run()

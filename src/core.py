@@ -377,17 +377,18 @@ class Texture:
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, tex_file, shader, size, vertices=None):
+    def __init__(self, tex_file, shader, size):
 
-        self.SIZE = 1000
+        self.SIZE = size
         self.VERTEX_COUNT = 128
         vertices = []
         normals = []
         texture_coords = []
 
+        # Create vertices, normals, and texture coordinates
         for i in range(0, self.VERTEX_COUNT):
             for j in range(0, self.VERTEX_COUNT):
-                # (x, y, z)
+                # Vertices - (x, y, z)
                 vertices.append([(j / (self.VERTEX_COUNT - 1)) * self.SIZE, 0, (i / (self.VERTEX_COUNT - 1)) * self.SIZE])
                 normals.append([0, 1, 0])
                 texture_coords.append([j / (self.VERTEX_COUNT - 1), i / (self.VERTEX_COUNT - 1)])
@@ -408,13 +409,6 @@ class TexturedPlane(Mesh):
 
         indices = np.array(indices)
 
-
-
-        # if vertices is None:
-            # vertices = size * np.array(
-            #     ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
-        # faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
-        # normals = np.array((0, 1, 0), np.float32)
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
         loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
