@@ -304,7 +304,7 @@ class Viewer(Node):
                           up=self.camera.get_camera_up())
 
             # Update the projection matrix
-            projection = perspective(fovy=self.camera.get_fov(), aspect=(self.width/self.height), near=0.1, far=500.0)
+            projection = perspective(fovy=self.camera.get_fov(), aspect=(self.width / self.height), near=0.1, far=500.0)
 
             # draw our scene objects
             self.draw(projection, view, identity())
@@ -380,13 +380,12 @@ class TexturedPlane(Mesh):
     def __init__(self, tex_file, shader, size, hmap_file):
         # Load heightmap file
         hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
-        print("hmap loaded")
         self.MAX_HEIGHT = 30
         self.MIN_HEIGHT = 0
         self.MAX_PIXEL_COLOR = 256
-
         self.SIZE = size
-        self.VERTEX_COUNT = 1024
+        self.VERTEX_COUNT = hmap_tex.shape[0]
+
         vertices = []
         normals = []
         texture_coords = []
@@ -408,8 +407,8 @@ class TexturedPlane(Mesh):
         texture_coords = np.array(texture_coords)
 
         indices = []
-        for gz in range(0, self.VERTEX_COUNT-1):
-            for gx in range(0, self.VERTEX_COUNT-1):
+        for gz in range(0, self.VERTEX_COUNT - 1):
+            for gx in range(0, self.VERTEX_COUNT - 1):
                 top_left = (gz * self.VERTEX_COUNT) + gx
                 top_right = top_left + 1
                 bottom_left = ((gz + 1) * self.VERTEX_COUNT) + gx
@@ -436,7 +435,7 @@ class TexturedPlane(Mesh):
         self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
 
     def get_height(self, x, z, image):
-        if x < 0 or x > image.shape[0] or z < 0 or z>=image.shape[0]:
+        if x < 0 or x > image.shape[0] or z < 0 or z >= image.shape[0]:
             return 0
         height = image[x, z, 0]
         # [0 to 1] range

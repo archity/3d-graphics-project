@@ -19,7 +19,6 @@ from skybox import Skybox
 import simpleaudio as sa
 
 from transform import rotate, translate, scale
-from terrain import Terrain
 
 
 def build_houses(viewer, shader):
@@ -276,7 +275,7 @@ def build_castle(viewer, shader):
 def build_terrain(viewer, shader):
     # Grass
     grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
-    plane = TexturedPlane("./../resources/grass.png", shader, size=1000, hmap_file="./../resources/hmap_2_mounds.png")
+    plane = TexturedPlane("./../resources/grass.png", shader, size=1000, hmap_file="./../resources/hmap_2_mounds_256px.png")
     grass_node.add(plane)
     viewer.add(grass_node)
 
