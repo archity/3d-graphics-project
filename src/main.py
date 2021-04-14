@@ -276,7 +276,7 @@ def build_castle(viewer, shader):
 def build_terrain(viewer, shader):
     # Grass
     grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
-    plane = TexturedPlane("./../resources/grass.png", shader, size=1000)
+    plane = TexturedPlane("./../resources/grass.png", shader, size=1000, hmap_file="./../resources/hmap_2_mounds.png")
     grass_node.add(plane)
     viewer.add(grass_node)
 
@@ -345,8 +345,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    wave_obj.play()
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()

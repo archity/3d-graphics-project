@@ -377,10 +377,16 @@ class Texture:
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, tex_file, shader, size):
+    def __init__(self, tex_file, shader, size, hmap_file):
+        # Load heightmap file
+        hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
+        print("hmap loaded")
+        self.MAX_HEIGHT = 30
+        self.MIN_HEIGHT = 0
+        self.MAX_PIXEL_COLOR = 256
 
         self.SIZE = size
-        self.VERTEX_COUNT = 128
+        self.VERTEX_COUNT = 1024
         vertices = []
         normals = []
         texture_coords = []
@@ -389,7 +395,10 @@ class TexturedPlane(Mesh):
         for i in range(0, self.VERTEX_COUNT):
             for j in range(0, self.VERTEX_COUNT):
                 # Vertices - (x, y, z)
-                vertices.append([(j / (self.VERTEX_COUNT - 1)) * self.SIZE, 0, (i / (self.VERTEX_COUNT - 1)) * self.SIZE])
+                vertices.append([(j / (self.VERTEX_COUNT - 1)) * self.SIZE,
+                                 self.get_height(i, j, image=hmap_tex),
+                                 (i / (self.VERTEX_COUNT - 1)) * self.SIZE])
+                # print(self.get_height(j, i, image=hmap_tex))
                 normals.append([0, 1, 0])
                 texture_coords.append([j / (self.VERTEX_COUNT - 1), i / (self.VERTEX_COUNT - 1)])
 
@@ -425,6 +434,17 @@ class TexturedPlane(Mesh):
 
         # setup texture and upload it to GPU
         self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
+
+    def get_height(self, x, z, image):
+        if x < 0 or x > image.shape[0] or z < 0 or z>=image.shape[0]:
+            return 0
+        height = image[x, z, 0]
+        # [0 to 1] range
+        height /= self.MAX_PIXEL_COLOR
+        # [0 to MAX_HEIGHT] range
+        height *= self.MAX_HEIGHT
+
+        return height
 
     def key_handler(self, key):
         # some interactive elements
