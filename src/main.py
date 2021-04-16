@@ -285,24 +285,6 @@ def build_castle(viewer, shader):
             cannon_1_node.add(mesh)
         viewer.add(cannon_1_node)
 
-    # Key Frame animation for Tower Cannon Ball (Cannon_1)
-    translate_keys = {0: vec(0, 0, 0), 2: vec(1, 1, 0), 4: vec(0, 0, 0)}
-    rotate_keys = {0: quaternion(), 2: quaternion_from_euler(180, 45, 90),
-                   3: quaternion_from_euler(180, 0, 180), 4: quaternion()}
-    scale_keys = {0: 1, 2: 0.5, 4: 1}
-    cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-    for mesh in mesh_list:
-        cannon_ball_node.add(mesh)
-    viewer.add(cannon_ball_node)
-
-
 
 def build_terrain(viewer, shader):
     # Grass
@@ -439,6 +421,23 @@ def main():
     # Start playing ambient audio in background
     # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
     # wave_obj.play()
+
+    # Key Frame animation for Tower Cannon Ball (Cannon_1)
+    translate_keys = {0: vec(0, 0, 1), 5: vec(0, 0, 1), 10: vec(0, 10, 1), 15: vec(0, 0, 1)}
+    rotate_keys = {0: quaternion(), 2: quaternion_from_euler(180, 45, 90),
+                   3: quaternion_from_euler(180, 0, 180), 4: quaternion()}
+    scale_keys = {0: 2, 2: 2, 4: 2}
+    cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
+    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=phong_shader,
+                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        cannon_ball_node.add(mesh)
+    viewer.add(cannon_ball_node)
 
     # start rendering loop
     viewer.run()
