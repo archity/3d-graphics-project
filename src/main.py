@@ -241,22 +241,16 @@ def build_castle(viewer, shader):
         castle_node.add(mesh)
     viewer.add(castle_node)
 
-    # Cannon_1
-    #
-    tex_list2 = ["./../resources/Cannon_3/Textures/cannon.jpg",
+    # Cannon_3
+    tex_list2 = ["./../resources/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/gun.jpg",
                  "./../resources/Cannon_3/Textures/metal.jpg",
-                 "./../resources/Cannon_3/Textures/wheel.jpg",
-                 "./../resources/Cannon_3/Textures/plate.jpg",
-                 "./../resources/Cannon_3/Textures/wheel.jpg",
-                 "./../resources/Cannon_3/Textures/gun.jpg",
-                 "./../resources/Cannon_3/Textures/rivet.jpg",
-                 "./../resources/Cannon_3/Textures/wheel.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/rivet.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg"
                  ]
-    cannon_1_node = Node(
-        transform=translate(-50, -1, 40) @ scale(1, 1, 1))
+    cannon_3_node = Node(
+        transform=translate(-15, -1, 145) @ scale(1, 1, 1) @ rotate((0, 1, 0), 90))
     mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
                                     tex_file=tex_list2,
                                     k_a=(.5, .5, .5),
@@ -265,6 +259,20 @@ def build_castle(viewer, shader):
                                     s=64
                                     )
 
+    for mesh in mesh_list:
+        cannon_3_node.add(mesh)
+    viewer.add(cannon_3_node)
+
+    # Cannon_1
+    cannon_1_node = Node(
+        transform=translate(-45, 17, 151) @ scale(1, 1, 1) @ rotate((0, 1, 0), 180))
+    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_1/cannon_2.obj", shader=shader,
+                                         tex_file="./../resources/Cannon_1/cannon_1_texture.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
     for mesh in mesh_list:
         cannon_1_node.add(mesh)
     viewer.add(cannon_1_node)
