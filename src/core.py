@@ -377,45 +377,39 @@ class Texture:
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, tex_file, shader, size, hmap_file):
+    def __init__(self, tex_file, shader, hmap_file=None, size=None, x_size=None, z_size=None):
         # Load heightmap file
-        hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
+        if not hmap_file:
+            hmap_tex = np.array([0, 0])
+        else:
+            hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
         self.MAX_HEIGHT = 30
         self.MIN_HEIGHT = 0
         self.MAX_PIXEL_COLOR = 256
-        self.SIZE = size
-        self.VERTEX_COUNT = hmap_tex.shape[0]
+        # self.SIZE = size
+        if not x_size and not z_size:
+            # Grass
+            self.x_size = hmap_tex.shape[0]
+            self.z_size = hmap_tex.shape[1]
+        else:
+            # Road
+            self.x_size = x_size
+            self.z_size = z_size
 
-        vertices = []
-        normals = []
-        texture_coords = []
+        if not size:
+            # Road
+            self.tex_x_size = self.x_size
+            self.tex_z_size = self.z_size
+        else:
+            # Grass
+            self.tex_x_size = size
+            self.tex_z_size = size
 
-        # Create vertices, normals, and texture coordinates
-        for i in range(0, self.VERTEX_COUNT):
-            for j in range(0, self.VERTEX_COUNT):
-                # Vertices - (x, y, z)
-                vertices.append([(j / (self.VERTEX_COUNT - 1)) * self.SIZE,
-                                 self.get_height(i, j, image=hmap_tex),
-                                 (i / (self.VERTEX_COUNT - 1)) * self.SIZE])
-                # print(self.get_height(j, i, image=hmap_tex))
-                normals.append([0, 1, 0])
-                texture_coords.append([j / (self.VERTEX_COUNT - 1), i / (self.VERTEX_COUNT - 1)])
-
-        # Convert to numpy array list
-        vertices = np.array(vertices)
-        normals = np.array(normals)
-        texture_coords = np.array(texture_coords)
-
-        indices = []
-        for gz in range(0, self.VERTEX_COUNT - 1):
-            for gx in range(0, self.VERTEX_COUNT - 1):
-                top_left = (gz * self.VERTEX_COUNT) + gx
-                top_right = top_left + 1
-                bottom_left = ((gz + 1) * self.VERTEX_COUNT) + gx
-                bottom_right = bottom_left + 1
-                indices.append([top_left, bottom_left, top_right, top_right, bottom_left, bottom_right])
-
-        indices = np.array(indices)
+        vertices, texture_coords, normals, indices = self.create_attributes(x_size=self.x_size,
+                                                                            z_size=self.z_size,
+                                                                            tex_x_size=self.tex_x_size,
+                                                                            tex_z_size=self.tex_z_size,
+                                                                            hmap_tex=hmap_tex)
 
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
@@ -433,6 +427,40 @@ class TexturedPlane(Mesh):
 
         # setup texture and upload it to GPU
         self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
+
+    def create_attributes(self, x_size, z_size, tex_x_size, tex_z_size, hmap_tex=None):
+        vertices = []
+        normals = []
+        texture_coords = []
+
+        # Create vertices, normals, and texture coordinates
+        for i in range(0, z_size):
+            for j in range(0, x_size):
+                # Vertices - (x, y, z)
+                vertices.append([(j / (x_size - 1)) * tex_x_size,
+                                 self.get_height(i, j, image=hmap_tex) if hmap_tex.any() != 0 else 0,
+                                 (i / (z_size - 1)) * tex_z_size])
+                # print(self.get_height(j, i, image=hmap_tex))
+                normals.append([0, 1, 0])
+                texture_coords.append([j / (x_size - 1), i / (z_size - 1)])
+
+        # Convert to numpy array list
+        vertices = np.array(vertices)
+        normals = np.array(normals)
+        texture_coords = np.array(texture_coords)
+
+        indices = []
+        for gz in range(0, x_size - 1):
+            for gx in range(0, z_size - 1):
+                top_left = (gz * x_size) + gx
+                top_right = top_left + 1
+                bottom_left = ((gz + 1) * x_size) + gx
+                bottom_right = bottom_left + 1
+                indices.append([top_left, bottom_left, top_right, top_right, bottom_left, bottom_right])
+
+        indices = np.array(indices)
+
+        return vertices, texture_coords, normals, indices
 
     def get_height(self, x, z, image):
         if x < 0 or x > image.shape[0] or z < 0 or z >= image.shape[0]:
