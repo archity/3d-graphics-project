@@ -241,7 +241,7 @@ def build_castle(viewer, shader):
         castle_node.add(mesh)
     viewer.add(castle_node)
 
-    # Cannon_3
+    # Ground cannon (Cannon_3)
     tex_list2 = ["./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/gun.jpg",
@@ -249,33 +249,35 @@ def build_castle(viewer, shader):
                  "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg"
                  ]
-    cannon_3_node = Node(
-        transform=translate(-15, -1, 145) @ scale(2, 2, 2) @ rotate((0, 1, 0), 90))
-    mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
-                                    tex_file=tex_list2,
-                                    k_a=(.5, .5, .5),
-                                    k_d=(1, 1, 1),
-                                    k_s=(.1, .1, .1),
-                                    s=64
-                                    )
+    for x_pos in [30, 15, -15, -30]:
+        cannon_3_node = Node(
+            transform=translate(x_pos, -1, 145) @ scale(2, 2, 2) @ rotate((0, 1, 0), 90))
+        mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
+                                        tex_file=tex_list2,
+                                        k_a=(.5, .5, .5),
+                                        k_d=(1, 1, 1),
+                                        k_s=(.1, .1, .1),
+                                        s=64
+                                        )
 
-    for mesh in mesh_list:
-        cannon_3_node.add(mesh)
-    viewer.add(cannon_3_node)
+        for mesh in mesh_list:
+            cannon_3_node.add(mesh)
+        viewer.add(cannon_3_node)
 
-    # Cannon_1
-    cannon_1_node = Node(
-        transform=translate(-45, 17, 151) @ scale(1, 1, 1) @ rotate((0, 1, 0), 180))
-    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_1/cannon_2.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_1/cannon_1_texture.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-    for mesh in mesh_list:
-        cannon_1_node.add(mesh)
-    viewer.add(cannon_1_node)
+    # Tower Cannon (Cannon_1)
+    for x_pos in [46, -45]:
+        cannon_1_node = Node(
+            transform=translate(x_pos, 17, 151) @ scale(1, 1, 1) @ rotate((0, 1, 0), 180))
+        mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_1/cannon_2.obj", shader=shader,
+                                             tex_file="./../resources/Cannon_1/cannon_1_texture.jpg",
+                                             k_a=(.4, .4, .4),
+                                             k_d=(1.2, 1.2, 1.2),
+                                             k_s=(.2, .2, .2),
+                                             s=4
+                                             )
+        for mesh in mesh_list:
+            cannon_1_node.add(mesh)
+        viewer.add(cannon_1_node)
 
     # Castle 2
     # tex_list = 30*["./../resources/castle/Brick1.jpg"]
