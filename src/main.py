@@ -156,6 +156,8 @@ def build_nature(viewer, shader):
         graveyard_cross2_node.add(mesh)
     viewer.add(graveyard_cross2_node)
 
+
+
     # House Tree 1
     # size = 0.3
     # tree_node = Node(
@@ -210,10 +212,10 @@ def build_nature(viewer, shader):
             transform=translate(-5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
         mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
                                              tex_file="./../resources/tree/lowPolyTree.png",
-                                             k_a=(.5, .5, .5),
-                                             k_d=(1, 1, 1),
-                                             k_s=(.1, .1, .1),
-                                             s=64
+                                             k_a=(.4, .4, .4),
+                                             k_d=(1.2, 1.2, 1.2),
+                                             k_s=(.2, .2, .2),
+                                             s=4
                                              )
         for mesh in mesh_list:
             tree_node.add(mesh)
@@ -239,23 +241,33 @@ def build_castle(viewer, shader):
         castle_node.add(mesh)
     viewer.add(castle_node)
 
-    # Pond
-    # Load pond's multiple textures one by one
-    # tex_list2 = ["./../resources/Test/pond/aea4776c-07fb-4104-b781-cdd4792fbaee.jpg",
-    #              "./../resources/Test/pond/abb783e6-3e93-26c0-248a-247666855da3.jpg",
-    #              "./../resources/Test/pond/b8d3965a-ad78-bf43-699b-bff8eca6c975.jpg",
-    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001042.jpg",
-    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001027.jpg",
-    #              "./../resources/Test/pond/00000000-0000-2222-3333-100000001027.jpg"
-    #              ]
-    # pond_node = Node(
-    #     transform=translate(-50, 2, 40) @ scale(4.2, 4.2, 4.2))
-    # mesh_list = multi_load_textured(file="./../resources/Test/pond/pond_wo-cube-base.fbx", shader=shader,
-    #                                 tex_file=tex_list2)
+    # Cannon_1
     #
-    # for mesh in mesh_list:
-    #     pond_node.add(mesh)
-    # viewer.add(pond_node)
+    tex_list2 = ["./../resources/Cannon_3/Textures/cannon.jpg",
+                 "./../resources/Cannon_3/Textures/gun.jpg",
+                 "./../resources/Cannon_3/Textures/metal.jpg",
+                 "./../resources/Cannon_3/Textures/wheel.jpg",
+                 "./../resources/Cannon_3/Textures/plate.jpg",
+                 "./../resources/Cannon_3/Textures/wheel.jpg",
+                 "./../resources/Cannon_3/Textures/gun.jpg",
+                 "./../resources/Cannon_3/Textures/rivet.jpg",
+                 "./../resources/Cannon_3/Textures/wheel.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/Cannon_3/Textures/rivet.jpg",
+                 ]
+    cannon_1_node = Node(
+        transform=translate(-50, -1, 40) @ scale(1, 1, 1))
+    mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
+                                    tex_file=tex_list2,
+                                    k_a=(.5, .5, .5),
+                                    k_d=(1, 1, 1),
+                                    k_s=(.1, .1, .1),
+                                    s=64
+                                    )
+
+    for mesh in mesh_list:
+        cannon_1_node.add(mesh)
+    viewer.add(cannon_1_node)
 
     # Castle 2
     # tex_list = 30*["./../resources/castle/Brick1.jpg"]
@@ -275,7 +287,8 @@ def build_castle(viewer, shader):
 def build_terrain(viewer, shader):
     # Grass
     grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
-    plane = TexturedPlane("./../resources/grass.png", shader, size=1000, hmap_file="./../resources/hmap_2_mounds_256px.png")
+    plane = TexturedPlane("./../resources/grass.png", shader, size=1000,
+                          hmap_file="./../resources/hmap_2_mounds_256px.png")
     grass_node.add(plane)
     viewer.add(grass_node)
 
