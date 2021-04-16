@@ -22,7 +22,7 @@ import simpleaudio as sa
 from transform import rotate, translate, scale
 
 from transform import lerp, vec
-from bisect import bisect_left      # search sorted keyframe lists
+from bisect import bisect_left  # search sorted keyframe lists
 
 from transform import (quaternion_slerp, quaternion_matrix, quaternion,
                        quaternion_from_euler)
@@ -163,8 +163,6 @@ def build_nature(viewer, shader):
         graveyard_cross2_node.add(mesh)
     viewer.add(graveyard_cross2_node)
 
-
-
     # House Tree 1
     # size = 0.3
     # tree_node = Node(
@@ -201,7 +199,7 @@ def build_nature(viewer, shader):
     # viewer.add(tree_node)
     # -------------------------------------------------
     # Pathway trees
-    for i in range(-70, 160, 40):
+    for i in range(-70, 100, 40):
         tree_node = Node(
             transform=translate(5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
         mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
@@ -248,18 +246,34 @@ def build_castle(viewer, shader):
         castle_node.add(mesh)
     viewer.add(castle_node)
 
+    # Wall cannon (low poly cannon)
+    for x_pos in [29.4, 17.9, 6.7, -4.5, -15.6, -27]:
+        cannon_3_node = Node(
+            transform=translate(x_pos, 16, 158) @ scale(.03, .03, .03) @ rotate((0, 1, 0), 180))
+        mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/low-poly-cannon.fbx", shader=shader,
+                                             tex_file="./../resources/Cannon_3/Textures/plate.jpg",
+                                             k_a=(.5, .5, .5),
+                                             k_d=(1, 1, 1),
+                                             k_s=(.1, .1, .1),
+                                             s=64
+                                             )
+
+        for mesh in mesh_list:
+            cannon_3_node.add(mesh)
+        viewer.add(cannon_3_node)
+
     # Ground cannon (Cannon_3)
-    tex_list2 = ["./../resources/Cannon_3/Textures/plate.jpg",
+    tex_list2 = ["./../resources/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/Cannon_3/Textures/gun.jpg",
                  "./../resources/Cannon_3/Textures/metal.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg"
                  ]
-    for x_pos in [40, 30, 20, 10, -10, -20, -30, -40]:
+    for x_pos in [30, 15, -15, -30]:
         cannon_3_node = Node(
-            transform=translate(x_pos, -1, 145) @ scale(.03, .03, .03) @ rotate((0, 1, 0), 180))
-        mesh_list = multi_load_textured(file="./../resources/Cannon_3/low-poly-cannon.fbx", shader=shader,
+            transform=translate(x_pos, -1, 145) @ scale(3, 3, 3) @ rotate((0, 1, 0), 90))
+        mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
                                         tex_file=tex_list2,
                                         k_a=(.5, .5, .5),
                                         k_d=(1, 1, 1),
@@ -303,8 +317,6 @@ def build_terrain(viewer, shader):
     # plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
     # pavement_node.add(plane)
     # viewer.add(pavement_node)
-
-
 
 
 def build_church(viewer, shader):
@@ -422,8 +434,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    wave_obj.play()
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
     translate_keys = {0: vec(0, 0, 1), 5: vec(0, 0, 1), 10: vec(0, 10, 1), 15: vec(0, 0, 1)}

@@ -25,11 +25,11 @@ class Camera:
         self.fov = 45.0
         self.last_x = 800.0 / 2.0
         self.last_y = 600.0 / 2.0
-        self.sensitivity = 0.02
+        self.sensitivity = 0.03
         # self.update_camera_vectors()
 
     def process_keyboard_input(self, window, delta_time):
-        camera_speed = 20 * delta_time
+        camera_speed = 40 * delta_time
         if glfw.get_key(window=window, key=glfw.KEY_W):
             temp = copy.deepcopy(self.camera_front)
             temp[1] = 0
