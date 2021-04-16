@@ -492,6 +492,51 @@ class TexturedPlane(Mesh):
         super().draw(projection, view, model, primitives)
 
 
+class TexturedPlaneFlat(Mesh):
+    """ Simple first textured object """
+
+    def __init__(self, tex_file, shader, size, vertices=None):
+
+        if vertices is None:
+            vertices = size * np.array(
+                ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
+        faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
+        super().__init__(shader, [vertices], faces)
+
+        loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
+        self.loc['diffuse_map'] = loc
+
+        # interactive toggles
+        self.wrap = cycle([GL.GL_REPEAT, GL.GL_MIRRORED_REPEAT,
+                           GL.GL_CLAMP_TO_BORDER, GL.GL_CLAMP_TO_EDGE])
+        self.filter = cycle([(GL.GL_NEAREST, GL.GL_NEAREST),
+                             (GL.GL_LINEAR, GL.GL_LINEAR),
+                             (GL.GL_LINEAR, GL.GL_LINEAR_MIPMAP_LINEAR)])
+        self.wrap_mode, self.filter_mode = next(self.wrap), next(self.filter)
+        self.tex_file = tex_file
+
+        # setup texture and upload it to GPU
+        self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
+
+    def key_handler(self, key):
+        # some interactive elements
+        if key == glfw.KEY_F6:
+            self.wrap_mode = next(self.wrap)
+            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
+        if key == glfw.KEY_F7:
+            self.filter_mode = next(self.filter)
+            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
+
+    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
+        GL.glUseProgram(self.shader.glid)
+
+        # texture access setups
+        GL.glActiveTexture(GL.GL_TEXTURE0)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
+        GL.glUniform1i(self.loc['diffuse_map'], 0)
+        super().draw(projection, view, model, primitives)
+
+
 class TexturedMesh(Mesh):
 
     def __init__(self, shader, tex, attributes, faces):

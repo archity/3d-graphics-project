@@ -14,7 +14,8 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np  # all matrix manipulations & OpenGL args
 import assimpcy  # 3D resource loader
 
-from core import Shader, Viewer, Texture, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
+from core import Shader, Viewer, Texture, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, \
+    TexturedPlaneFlat
 from skybox import Skybox
 import simpleaudio as sa
 
@@ -248,17 +249,17 @@ def build_castle(viewer, shader):
     viewer.add(castle_node)
 
     # Ground cannon (Cannon_3)
-    tex_list2 = ["./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/gun.jpg",
+    tex_list2 = ["./../resources/Cannon_3/Textures/plate.jpg",
                  "./../resources/Cannon_3/Textures/metal.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg",
                  "./../resources/Cannon_3/Textures/body_wood.jpg"
                  ]
-    for x_pos in [30, 15, -15, -30]:
+    for x_pos in [40, 30, 20, 10, -10, -20, -30, -40]:
         cannon_3_node = Node(
-            transform=translate(x_pos, -1, 145) @ scale(2, 2, 2) @ rotate((0, 1, 0), 90))
-        mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
+            transform=translate(x_pos, -1, 145) @ scale(.03, .03, .03) @ rotate((0, 1, 0), 180))
+        mesh_list = multi_load_textured(file="./../resources/Cannon_3/low-poly-cannon.fbx", shader=shader,
                                         tex_file=tex_list2,
                                         k_a=(.5, .5, .5),
                                         k_d=(1, 1, 1),
@@ -302,6 +303,8 @@ def build_terrain(viewer, shader):
     # plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
     # pavement_node.add(plane)
     # viewer.add(pavement_node)
+
+
 
 
 def build_church(viewer, shader):
@@ -419,8 +422,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
     translate_keys = {0: vec(0, 0, 1), 5: vec(0, 0, 1), 10: vec(0, 10, 1), 15: vec(0, 0, 1)}
