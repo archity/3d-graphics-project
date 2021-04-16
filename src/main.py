@@ -250,7 +250,7 @@ def build_castle(viewer, shader):
                  "./../resources/Cannon_3/Textures/body_wood.jpg"
                  ]
     cannon_3_node = Node(
-        transform=translate(-15, -1, 145) @ scale(1, 1, 1) @ rotate((0, 1, 0), 90))
+        transform=translate(-15, -1, 145) @ scale(2, 2, 2) @ rotate((0, 1, 0), 90))
     mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
                                     tex_file=tex_list2,
                                     k_a=(.5, .5, .5),
@@ -267,7 +267,7 @@ def build_castle(viewer, shader):
     cannon_1_node = Node(
         transform=translate(-45, 17, 151) @ scale(1, 1, 1) @ rotate((0, 1, 0), 180))
     mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_1/cannon_2.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_1/cannon_1_texture.png",
+                                         tex_file="./../resources/Cannon_1/cannon_1_texture.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
