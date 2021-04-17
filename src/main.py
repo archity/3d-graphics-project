@@ -14,8 +14,7 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np  # all matrix manipulations & OpenGL args
 import assimpcy  # 3D resource loader
 
-from core import Shader, Viewer, Texture, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, \
-    TexturedPlaneFlat
+from core import Shader, Viewer, Texture, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
 from skybox import Skybox
 import simpleaudio as sa
 
@@ -201,7 +200,7 @@ def build_nature(viewer, shader):
     # Pathway trees
     for i in range(-70, 100, 40):
         tree_node = Node(
-            transform=translate(5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
+            transform=translate(10, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
         mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
                                              tex_file="./../resources/tree/lowPolyTree.png",
                                              k_a=(.5, .5, .5),
@@ -214,7 +213,7 @@ def build_nature(viewer, shader):
         viewer.add(tree_node)
 
         tree_node = Node(
-            transform=translate(-5, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
+            transform=translate(-10, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
         mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
                                              tex_file="./../resources/tree/lowPolyTree.png",
                                              k_a=(.4, .4, .4),
@@ -302,21 +301,18 @@ def build_castle(viewer, shader):
 
 
 def build_terrain(viewer, shader):
-    # Grass
+    # Grass and pavement
+
+    background_texture_file = "./../resources/grass.png"
+    road_texture_file = "./../resources/pavement-texture.jpg"
+    blendmap_file = "./../resources/blend_map.png"
+
     grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
-    plane = TexturedPlane("./../resources/grass.png", shader, size=1000,
+    plane = TexturedPlane(background_texture_file, road_texture_file, blendmap_file,
+                          shader, size=1000,
                           hmap_file="./../resources/hmap_2_mounds_256px.png")
     grass_node.add(plane)
     viewer.add(grass_node)
-
-    # TODO: Build road
-    # width = 10
-    # vertices = (
-    #     np.array(((-width / 2, -160, 0), (width / 2, -160, 0), (width / 2, 80, 0), (-width / 2, 80, 0)), np.float32))
-    # pavement_node = Node(transform=translate(0, -0.9, 0) @ rotate((1, 0, 0), -90))
-    # plane = TexturedPlane("./../resources/stone_road.jpg", shader, size=2, vertices=vertices)
-    # pavement_node.add(plane)
-    # viewer.add(pavement_node)
 
 
 def build_church(viewer, shader):
@@ -438,21 +434,21 @@ def main():
     # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
-    translate_keys = {0: vec(0, 0, 1), 5: vec(0, 0, 1), 10: vec(0, 10, 1), 15: vec(0, 0, 1)}
-    rotate_keys = {0: quaternion(), 2: quaternion_from_euler(180, 45, 90),
-                   3: quaternion_from_euler(180, 0, 180), 4: quaternion()}
-    scale_keys = {0: 2, 2: 2, 4: 2}
-    cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=phong_shader,
-                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-    for mesh in mesh_list:
-        cannon_ball_node.add(mesh)
-    viewer.add(cannon_ball_node)
+    # translate_keys = {0: vec(0, 0, 1), 5: vec(0, 0, 1), 10: vec(0, 10, 1), 15: vec(0, 0, 1)}
+    # rotate_keys = {0: quaternion(), 2: quaternion_from_euler(180, 45, 90),
+    #                3: quaternion_from_euler(180, 0, 180), 4: quaternion()}
+    # scale_keys = {0: 2, 2: 2, 4: 2}
+    # cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
+    # mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=phong_shader,
+    #                                      tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
+    #                                      k_a=(.4, .4, .4),
+    #                                      k_d=(1.2, 1.2, 1.2),
+    #                                      k_s=(.2, .2, .2),
+    #                                      s=4
+    #                                      )
+    # for mesh in mesh_list:
+    #     cannon_ball_node.add(mesh)
+    # viewer.add(cannon_ball_node)
 
     # start rendering loop
     viewer.run()

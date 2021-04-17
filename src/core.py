@@ -194,8 +194,8 @@ class Mesh:
 
     def __init__(self, shader, attributes, index=None):
         self.shader = shader
-        names = ['view', 'projection', 'model']
-        self.loc = {n: GL.glGetUniformLocation(shader.glid, n) for n in names}
+        self.names = ['view', 'projection', 'model']
+        self.loc = {n: GL.glGetUniformLocation(shader.glid, n) for n in self.names}
         self.vertex_array = VertexArray(attributes, index)
 
     def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
@@ -377,44 +377,25 @@ class Texture:
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, tex_file, shader, hmap_file=None, size=None, x_size=None, z_size=None):
+    def __init__(self, background_texture_file, road_texture_file, blendmap_file, shader, size, hmap_file):
+
         # Load heightmap file
-        if not hmap_file:
-            hmap_tex = np.array([0, 0])
-        else:
-            hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
+        hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
+
         self.MAX_HEIGHT = 30
         self.MIN_HEIGHT = 0
         self.MAX_PIXEL_COLOR = 256
-        # self.SIZE = size
-        if not x_size and not z_size:
-            # Grass
-            self.x_size = hmap_tex.shape[0]
-            self.z_size = hmap_tex.shape[1]
-        else:
-            # Road
-            self.x_size = x_size
-            self.z_size = z_size
+        self.SIZE = size
+        self.background_texture_file = background_texture_file
+        self.road_texture_file = road_texture_file
+        self.blendmap_file = blendmap_file
 
-        if not size:
-            # Road
-            self.tex_x_size = self.x_size
-            self.tex_z_size = self.z_size
-        else:
-            # Grass
-            self.tex_x_size = size
-            self.tex_z_size = size
-
-        vertices, texture_coords, normals, indices = self.create_attributes(x_size=self.x_size,
-                                                                            z_size=self.z_size,
-                                                                            tex_x_size=self.tex_x_size,
-                                                                            tex_z_size=self.tex_z_size,
-                                                                            hmap_tex=hmap_tex)
+        vertices, texture_coords, normals, indices = self.create_attributes(self.SIZE, hmap_tex=hmap_tex)
 
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
-        loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
-        self.loc['diffuse_map'] = loc
+        self.names = ['diffuse_map', 'blue_texture', 'blendmap']
+        self.loc1 = {n: GL.glGetUniformLocation(shader.glid, n) for n in self.names}
 
         # interactive toggles
         self.wrap = cycle([GL.GL_REPEAT, GL.GL_MIRRORED_REPEAT,
@@ -423,26 +404,27 @@ class TexturedPlane(Mesh):
                              (GL.GL_LINEAR, GL.GL_LINEAR),
                              (GL.GL_LINEAR, GL.GL_LINEAR_MIPMAP_LINEAR)])
         self.wrap_mode, self.filter_mode = next(self.wrap), next(self.filter)
-        self.tex_file = tex_file
 
         # setup texture and upload it to GPU
-        self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
+        self.background_texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
+        self.road_texture = Texture(self.road_texture_file, self.wrap_mode, *self.filter_mode)
+        self.blendmap_texture = Texture(self.blendmap_file, self.wrap_mode, *self.filter_mode)
 
-    def create_attributes(self, x_size, z_size, tex_x_size, tex_z_size, hmap_tex=None):
+    def create_attributes(self, size, hmap_tex=None):
         vertices = []
         normals = []
         texture_coords = []
 
         # Create vertices, normals, and texture coordinates
-        for i in range(0, z_size):
-            for j in range(0, x_size):
+        for i in range(0, size):
+            for j in range(0, size):
                 # Vertices - (x, y, z)
-                vertices.append([(j / (x_size - 1)) * tex_x_size,
-                                 self.get_height(i, j, image=hmap_tex) if hmap_tex.any() != 0 else 0,
-                                 (i / (z_size - 1)) * tex_z_size])
+                vertices.append([(j / (size - 1)) * size,
+                                 self.get_height(i, j, image=hmap_tex),
+                                 (i / (size - 1)) * size])
                 # print(self.get_height(j, i, image=hmap_tex))
                 normals.append([0, 1, 0])
-                texture_coords.append([j / (x_size - 1), i / (z_size - 1)])
+                texture_coords.append([j / (size - 1), i / (size - 1)])
 
         # Convert to numpy array list
         vertices = np.array(vertices)
@@ -450,11 +432,11 @@ class TexturedPlane(Mesh):
         texture_coords = np.array(texture_coords)
 
         indices = []
-        for gz in range(0, x_size - 1):
-            for gx in range(0, z_size - 1):
-                top_left = (gz * x_size) + gx
+        for gz in range(0, size - 1):
+            for gx in range(0, size - 1):
+                top_left = (gz * size) + gx
                 top_right = top_left + 1
-                bottom_left = ((gz + 1) * x_size) + gx
+                bottom_left = ((gz + 1) * size) + gx
                 bottom_right = bottom_left + 1
                 indices.append([top_left, bottom_left, top_right, top_right, bottom_left, bottom_right])
 
@@ -463,7 +445,7 @@ class TexturedPlane(Mesh):
         return vertices, texture_coords, normals, indices
 
     def get_height(self, x, z, image):
-        if x < 0 or x > image.shape[0] or z < 0 or z >= image.shape[0]:
+        if x < 0 or x >= image.shape[0] or z < 0 or z >= image.shape[0]:
             return 0
         height = image[x, z, 0]
         # [0 to 1] range
@@ -477,64 +459,31 @@ class TexturedPlane(Mesh):
         # some interactive elements
         if key == glfw.KEY_F6:
             self.wrap_mode = next(self.wrap)
-            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
+            self.texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
         if key == glfw.KEY_F7:
             self.filter_mode = next(self.filter)
-            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
+            self.texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
 
     def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
         GL.glUseProgram(self.shader.glid)
 
         # texture access setups
-        GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
-        GL.glUniform1i(self.loc['diffuse_map'], 0)
+        self.bind_textures()
+        self.connect_texture_units()
         super().draw(projection, view, model, primitives)
 
+    def connect_texture_units(self):
+        GL.glUniform1i(self.loc1['diffuse_map'], 0)
+        GL.glUniform1i(self.loc1['blue_texture'], 1)
+        GL.glUniform1i(self.loc1['blendmap'], 2)
 
-class TexturedPlaneFlat(Mesh):
-    """ Simple first textured object """
-
-    def __init__(self, tex_file, shader, size, vertices=None):
-
-        if vertices is None:
-            vertices = size * np.array(
-                ((-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)), np.float32)
-        faces = np.array(((0, 1, 2), (0, 2, 3)), np.uint32)
-        super().__init__(shader, [vertices], faces)
-
-        loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
-        self.loc['diffuse_map'] = loc
-
-        # interactive toggles
-        self.wrap = cycle([GL.GL_REPEAT, GL.GL_MIRRORED_REPEAT,
-                           GL.GL_CLAMP_TO_BORDER, GL.GL_CLAMP_TO_EDGE])
-        self.filter = cycle([(GL.GL_NEAREST, GL.GL_NEAREST),
-                             (GL.GL_LINEAR, GL.GL_LINEAR),
-                             (GL.GL_LINEAR, GL.GL_LINEAR_MIPMAP_LINEAR)])
-        self.wrap_mode, self.filter_mode = next(self.wrap), next(self.filter)
-        self.tex_file = tex_file
-
-        # setup texture and upload it to GPU
-        self.texture = Texture(tex_file, self.wrap_mode, *self.filter_mode)
-
-    def key_handler(self, key):
-        # some interactive elements
-        if key == glfw.KEY_F6:
-            self.wrap_mode = next(self.wrap)
-            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
-        if key == glfw.KEY_F7:
-            self.filter_mode = next(self.filter)
-            self.texture = Texture(self.tex_file, self.wrap_mode, *self.filter_mode)
-
-    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
-        GL.glUseProgram(self.shader.glid)
-
-        # texture access setups
+    def bind_textures(self):
         GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
-        GL.glUniform1i(self.loc['diffuse_map'], 0)
-        super().draw(projection, view, model, primitives)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.background_texture.glid)
+        GL.glActiveTexture(GL.GL_TEXTURE1)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.road_texture.glid)
+        GL.glActiveTexture(GL.GL_TEXTURE2)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.blendmap_texture.glid)
 
 
 class TexturedMesh(Mesh):

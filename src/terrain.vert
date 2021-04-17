@@ -29,7 +29,7 @@ void main() {
     vec4 positionRelativeToCam = view * worldPosition;
 
     gl_Position = projection * positionRelativeToCam;
-    frag_tex_coords = texture_coords * 100;
+    frag_tex_coords = texture_coords;
 
     // Lighting effects for ground (Unused)
 //    vec3 lightPosition = vec3(-1, -1, -1);
