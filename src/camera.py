@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import glfw  # lean window system wrapper for OpenGL
 import OpenGL.GL as GL  # standard Python OpenGL wrapper
+from PIL import Image
 
 from transform import rotate, translate, scale, normalized, sincos
 
@@ -10,7 +11,7 @@ from transform import rotate, translate, scale, normalized, sincos
 class Camera:
     def __init__(self):
         # Define camera specific variables
-        self.camera_pos = np.array((0.0, 1.0, 3.0))
+        self.camera_pos = np.array((0.0, 4.0, 0.0))
         # self.camera_target = np.array((1.0, 0.0, 0.0))
         # self.camera_direction = normalized((self.camera_pos - self.camera_target))
         self.up = np.array((0.0, 1.0, 0.0))
@@ -28,8 +29,13 @@ class Camera:
         self.sensitivity = 0.03
         # self.update_camera_vectors()
 
+        self.hmap_file = "./../resources/hmap_2_mounds_4096px.png"
+        self.hmap_tex = np.asarray(Image.open(self.hmap_file).convert('RGB'))
+
     def process_keyboard_input(self, window, delta_time):
-        camera_speed = 40 * delta_time
+        camera_speed = 30 * delta_time
+        self.camera_pos[1] = self.scale_xz_to_hmap() + 3
+        # print(self.camera_pos[0], ", ", self.camera_pos[1], ", ", self.camera_pos[2])
         if glfw.get_key(window=window, key=glfw.KEY_W):
             temp = copy.deepcopy(self.camera_front)
             temp[1] = 0
@@ -90,6 +96,25 @@ class Camera:
                 self.camera_front[1] -= self.sensitivity
                 # self.camera_front = normalized(self.camera_front)
 
+    def scale_xz_to_hmap(self):
+        # Scale the current coordinates to the high resolution (4096px)
+        # heightmap's range.
+        # +500 offset because because our world (grass area) is from [-500 to +500]
+        x_coord = int(((self.camera_pos[2] + 500) / 1000) * self.hmap_tex.shape[0])
+        z_coord = int(((self.camera_pos[0] + 500) / 1000) * self.hmap_tex.shape[0])
+        height = self.get_height(x_coord, z_coord, self.hmap_tex)
+        return height
+
+    def get_height(self, x, z, image):
+        if x < 0 or x >= image.shape[0] or z < 0 or z >= image.shape[0]:
+            return 0
+        height = image[x, z, 0]
+        # [0 to 1] range
+        height /= 256
+        # [0 to MAX_HEIGHT] range
+        height *= 30
+
+        return height
 
     # def process_mouse_movement(self, window, xpos, ypos):
     #     # (DISABLED)
