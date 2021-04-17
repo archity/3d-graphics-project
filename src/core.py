@@ -385,12 +385,12 @@ class TexturedPlane(Mesh):
         self.MAX_HEIGHT = 30
         self.MIN_HEIGHT = 0
         self.MAX_PIXEL_COLOR = 256
-        self.SIZE = size
+        self.HMAP_SIZE = hmap_tex.shape[0]  # 256
         self.background_texture_file = background_texture_file
         self.road_texture_file = road_texture_file
         self.blendmap_file = blendmap_file
 
-        vertices, texture_coords, normals, indices = self.create_attributes(self.SIZE, hmap_tex=hmap_tex)
+        vertices, texture_coords, normals, indices = self.create_attributes(self.HMAP_SIZE, hmap_tex=hmap_tex)
 
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
@@ -410,7 +410,7 @@ class TexturedPlane(Mesh):
         self.road_texture = Texture(self.road_texture_file, self.wrap_mode, *self.filter_mode)
         self.blendmap_texture = Texture(self.blendmap_file, self.wrap_mode, *self.filter_mode)
 
-    def create_attributes(self, size, hmap_tex=None):
+    def create_attributes(self, size, hmap_tex):
         vertices = []
         normals = []
         texture_coords = []
@@ -419,10 +419,10 @@ class TexturedPlane(Mesh):
         for i in range(0, size):
             for j in range(0, size):
                 # Vertices - (x, y, z)
-                vertices.append([(j / (size - 1)) * size,
+                vertices.append([(j / (size - 1)) * 1000,
                                  self.get_height(i, j, image=hmap_tex),
-                                 (i / (size - 1)) * size])
-                # print(self.get_height(j, i, image=hmap_tex))
+                                 (i / (size - 1)) * 1000])
+                # print(self.get_height(i, j, image=hmap_tex))
                 normals.append([0, 1, 0])
                 texture_coords.append([j / (size - 1), i / (size - 1)])
 
