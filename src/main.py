@@ -198,29 +198,32 @@ def build_nature(viewer, shader):
     # viewer.add(tree_node)
     # -------------------------------------------------
     # Pathway trees
+    tex_list = ["./../resources/tree/CommonTree/bark_decidious.jpg",
+                "./../resources/tree/CommonTree/leaves_256px.jpg"]
+    tree_size = 4.0
     for i in range(-70, 100, 40):
         tree_node = Node(
-            transform=translate(10, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
-        mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
-                                             tex_file="./../resources/tree/lowPolyTree.png",
-                                             k_a=(.5, .5, .5),
-                                             k_d=(1, 1, 1),
-                                             k_s=(.1, .1, .1),
-                                             s=64
-                                             )
+            transform=translate(10, -1, i) @ scale(tree_size, tree_size, tree_size) @ rotate((1, 0, 0), -90))
+        mesh_list = multi_load_textured(file="./../resources/tree/CommonTree/CommonTree_1.fbx", shader=shader,
+                                        tex_file=tex_list,
+                                        k_a=(.4, .4, .4),
+                                        k_d=(1.2, 1.2, 1.2),
+                                        k_s=(.2, .2, .2),
+                                        s=4
+                                        )
         for mesh in mesh_list:
             tree_node.add(mesh)
         viewer.add(tree_node)
 
         tree_node = Node(
-            transform=translate(-10, -1.5, i) @ scale(0.3, 0.3, 0.3) @ rotate((0, 1, 0), 45))
-        mesh_list = load_textured_phong_mesh(file="./../resources/tree/lowPolyTree.obj", shader=shader,
-                                             tex_file="./../resources/tree/lowPolyTree.png",
-                                             k_a=(.4, .4, .4),
-                                             k_d=(1.2, 1.2, 1.2),
-                                             k_s=(.2, .2, .2),
-                                             s=4
-                                             )
+            transform=translate(-10, -1, i) @ scale(tree_size, tree_size, tree_size) @ rotate((1, 0, 0), -90))
+        mesh_list = multi_load_textured(file="./../resources/tree/CommonTree/CommonTree_1.fbx", shader=shader,
+                                        tex_file=tex_list,
+                                        k_a=(.4, .4, .4),
+                                        k_d=(1.2, 1.2, 1.2),
+                                        k_s=(.2, .2, .2),
+                                        s=4
+                                        )
         for mesh in mesh_list:
             tree_node.add(mesh)
         viewer.add(tree_node)
