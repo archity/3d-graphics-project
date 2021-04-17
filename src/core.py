@@ -325,6 +325,8 @@ class Viewer(Node):
                 glfw.set_window_should_close(self.win, True)
             if key == glfw.KEY_R:
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, next(self.fill_modes))
+            if key == glfw.KEY_SPACE:
+                glfw.set_time(0)
 
             # call Node.key_handler which calls key_handlers for all drawables
             self.key_handler(key)
