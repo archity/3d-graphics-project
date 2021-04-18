@@ -105,7 +105,7 @@ def build_houses(viewer, shader):
     # -------------------------------------------------
 
 
-def build_nature(viewer, shader):
+def build_graveyard(viewer, shader):
     # Rocks
     rock_node = Node(
         transform=translate(30, -1, -20) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
@@ -197,6 +197,9 @@ def build_nature(viewer, shader):
     #     tree_node.add(mesh)
     # viewer.add(tree_node)
     # -------------------------------------------------
+
+
+def build_tree(viewer, shader):
     # Pathway trees
     tex_list = ["./../resources/tree/CommonTree/bark_decidious.jpg",
                 "./../resources/tree/CommonTree/leaves_256px.jpg"]
@@ -402,6 +405,7 @@ def main():
     terrain_shader = Shader("terrain.vert", "terrain.frag")
     cube_shader = Shader("texture.vert", "texture.frag")
     phong_shader = Shader("phong.vert", "phong.frag")
+    lambertian_shader = Shader("lambertian.vert", "lambertian.frag")
     # phong_shader2 = Shader("phong.vert", "phong.frag")
     # Simple cube
     # cube_node = Node(transform=scale(4, 4, 4) @ translate(0, 0.25, 0) @ rotate((0, 1, 0), 90))
@@ -411,7 +415,8 @@ def main():
     # viewer.add(cube_node)
 
     build_terrain(viewer, shader=terrain_shader)
-    build_nature(viewer, shader=phong_shader)
+    build_tree(viewer, shader=lambertian_shader)
+    build_graveyard(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
     build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
@@ -437,9 +442,8 @@ def main():
     # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
-    # translate_keys = {0: vec(-45, 0, 30), 5: vec(-45, 6, 70), 10: vec(-45, 12, 110), 15: vec(-45, 17, 151)}
-    # rotate_keys = {0: quaternion(), 5: quaternion_from_euler(180, 45, 90),
-    #               10: quaternion_from_euler(180, 0, 180), 15: quaternion()}
+    # translate_keys = {0: vec(-40, 0, 30), 5: vec(-40, 6, 70), 10: vec(-40, 12, 110), 15: vec(-40, 17, 151)}
+    # rotate_keys = {0: quaternion(), 5: quaternion(), 10: quaternion(), 15: quaternion()}
     # scale_keys = {0: 2, 5: 2, 10: 2, 15: 2}
     translate_keys = {0: vec(-48, 0, 30), 4: vec(-48, 19, 148)}
     rotate_keys = {0: quaternion(), 4: quaternion()}
