@@ -7,6 +7,7 @@ import OpenGL.GL as GL
 import numpy as np
 from PIL import Image
 from core import VertexArray
+import glfw
 from transform import translate, perspective, rotate, lookat
 
 # Skybox vertices
@@ -63,6 +64,9 @@ face_list = [
 
 class Skybox:
     def __init__(self, shader_skybox):
+        self.rotation = 0
+        self.ROTATION_SPEED = 0.005
+
         self.shader_skybox = shader_skybox
         # -------------------------------Cubemap stuff------------------------------------
         # Create a cubemap texture, and bind it to proper texture target
@@ -115,6 +119,9 @@ class Skybox:
         # view = translate(z=-3.0)
         # projection = perspective(45.0, 800.0/600.0, 0.1, 100.0)
 
+        self.rotation += (self.ROTATION_SPEED * glfw.get_time())
+        model = rotate(axis=(0, 1, 0), angle=self.rotation)
+
         GL.glUniformMatrix4fv(self.loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(self.loc['projection'], 1, True, projection)
         GL.glUniformMatrix4fv(self.loc['model'], 1, True, model)
@@ -131,3 +138,10 @@ class Skybox:
         GL.glDepthMask(GL.GL_TRUE)
 
         GL.glDepthFunc(GL.GL_LESS)
+
+    # def bind_textures(self):
+    #     GL.glActiveTexture(GL.GL_TEXTURE0)
+    #     GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
+    #     GL.glActiveTexture(GL.GL_TEXTURE1)
+    #     GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.night_texture)
+    #     GL.glUniform1f()
