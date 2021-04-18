@@ -4,10 +4,12 @@ Python OpenGL Medieval Project.
 """
 # Python built-in modules
 import glfw  # lean window system wrapper for OpenGL
+import numpy as np
 
 # External, non built-in modules
 from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
 from keyframe import KeyFrameControlNode
+from procedural_anime import ProceduralAnim
 from skybox import Skybox
 from transform import (quaternion)
 from transform import rotate, translate, scale
@@ -133,6 +135,32 @@ def build_graveyard(viewer, shader):
     for mesh in mesh_list:
         graveyard_cross2_node.add(mesh)
     viewer.add(graveyard_cross2_node)
+
+    # Graveyard Cross 2
+    graveyard_cross2_node = Node(
+        transform=translate(-50, -1, -10) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross2_node.add(mesh)
+    viewer.add(graveyard_cross2_node)
+
+
+def circ_motion():
+    r = 5
+    speed = 5
+    angle = (glfw.get_time() * speed) % 360
+    x = r * np.cos(np.deg2rad(angle))
+    y = r/2 * np.sin(np.deg2rad(angle))
+    z = r * np.sin(np.deg2rad(angle))
+    trans_mat = translate(x, y, z) @ rotate((0, 1, 0), 270 - angle)
+    keyframe_transform = trans_mat
+    return keyframe_transform
 
 
 def build_tree(viewer, shader):
@@ -311,9 +339,6 @@ def main():
     # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
-    # translate_keys = {0: vec(-40, 0, 30), 5: vec(-40, 6, 70), 10: vec(-40, 12, 110), 15: vec(-40, 17, 151)}
-    # rotate_keys = {0: quaternion(), 5: quaternion(), 10: quaternion(), 15: quaternion()}
-    # scale_keys = {0: 2, 5: 2, 10: 2, 15: 2}
     translate_keys = {0: vec(-48, 0, 30), 4: vec(-48, 19, 148)}
     rotate_keys = {0: quaternion(), 4: quaternion()}
     scale_keys = {0: 2, 4: 2}
@@ -328,6 +353,20 @@ def main():
     for mesh in mesh_list:
         cannon_ball_node.add(mesh)
     viewer.add(cannon_ball_node)
+
+    # Bird
+    bird_node = ProceduralAnim(circ_motion)
+    mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=phong_shader,
+                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        bird_node.add(mesh)
+    viewer.add(bird_node)
+
 
     # start rendering loop
     viewer.run()
