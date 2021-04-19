@@ -140,46 +140,47 @@ class Skybox:
 
         # Bind the skybox's VAO
         GL.glBindVertexArray(self.vertex_array.glid)
-        # ??? (making no difference)
-        # GL.glActiveTexture(GL.GL_TEXTURE0)
-        # Bind the cubemap texture
-        # GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
 
+        # Enable vertex attribute array
         GL.glEnableVertexAttribArray(0)
-        self.bind_textures()
 
+        # Bind cubemap textures and upload to GPU
+        self.bind_textures()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, 36)
+
+        # Disable vertex attribute array
         GL.glDisableVertexAttribArray(0)
-        GL.glBindVertexArray(0)
+
         # Set depth function back to default
         GL.glDepthMask(GL.GL_TRUE)
         GL.glDepthFunc(GL.GL_LESS)
 
     def bind_textures(self):
-        color = (0.2, 0.20, 0.20)
+        # color = (0.2, 0.20, 0.20)
         self.time = glfw.get_time() * 1000
         self.time %= 24000
         if 0 <= self.time < 5000:
             blend_factor = (self.time - 0) / (5000 - 0)
             texture1 = self.night_skybox_texture
             texture2 = self.night_skybox_texture
-            color = (0.2, 0.20, 0.20)
+            # color = (0.2, 0.20, 0.20)
         elif 5000 <= self.time < 8000:
             blend_factor = (self.time - 5000) / (8000 - 5000)
             texture1 = self.night_skybox_texture
             texture2 = self.day_skybox_texture
-            color = (0.4, 0.45, 0.45)
+            # color = (0.4, 0.45, 0.45)
         elif 8000 <= self.time < 21000:
             blend_factor = (self.time - 8000) / (21000 - 8000)
             texture1 = self.day_skybox_texture
             texture2 = self.day_skybox_texture
-            color = (0.6, 0.70, 0.70)
+            # color = (0.6, 0.70, 0.70)
         else:
             blend_factor = (self.time - 21000) / (24000 - 21000)
             texture1 = self.day_skybox_texture
             texture2 = self.night_skybox_texture
-            color = (0.4, 0.45, 0.45)
+            # color = (0.4, 0.45, 0.45)
 
+        # Bind the cubemaps' texture
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture1)
         GL.glUniform1i(self.loc['skybox'], 0)
