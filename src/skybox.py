@@ -65,18 +65,36 @@ face_list = [
 class Skybox:
     def __init__(self, shader_skybox):
         self.rotation = 0
-        self.ROTATION_SPEED = 0.005
+        self.ROTATION_SPEED = 1
 
         self.shader_skybox = shader_skybox
-        # -------------------------------Cubemap stuff------------------------------------
+        self.time = 0
+
+        day_skybox = "./../resources/skybox2/"
+        night_skybox = "./../resources/skybox3/"
+
+        self.day_skybox_texture = self.load_cubemap(texture_file=day_skybox, tex_num=GL.GL_TEXTURE0)
+        self.night_skybox_texture = self.load_cubemap(texture_file=night_skybox, tex_num=GL.GL_TEXTURE1)
+
+        # create vertex array object, bind it
+        # Create VBO, bind the new VBO, upload its data to GPU, declare size and type
+        # (using the VertexArray class)
+        self.vertex_array = VertexArray([skyboxVertices])
+
+        # Get Uniform location of shader program
+        names = ['view', 'projection', 'model', 'blend_factor', 'skybox', 'skybox2']
+        self.loc = {n: GL.glGetUniformLocation(self.shader_skybox.glid, n) for n in names}
+
+    def load_cubemap(self, texture_file, tex_num):
         # Create a cubemap texture, and bind it to proper texture target
         # (bind to GL_TEXTURE_CUBE_MAP)
-        self.texture_cubemap = GL.glGenTextures(1)
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
+        texture_cubemap = GL.glGenTextures(1)
+        GL.glActiveTexture(tex_num)
+        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture_cubemap)
 
         # Read all the faces one by one
         # Specify a 2D texture image for each
-        face_list_urls = ["./../resources/skybox2/" + s for s in face_list]
+        face_list_urls = [texture_file + s for s in face_list]
         for index, face_url in enumerate(face_list_urls):
             face = np.array(Image.open(face_url))
             GL.glTexImage2D(GL.GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, GL.GL_RGB, face.shape[1],
@@ -90,16 +108,8 @@ class Skybox:
         GL.glTexParameteri(GL.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
         GL.glTexParameteri(GL.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP_TO_EDGE)
 
+        return texture_cubemap
         # --------------------------------------------------------------------------------
-
-        # create vertex array object, bind it
-        # Create VBO, bind the new VBO, upload its data to GPU, declare size and type
-        # (using the VertexArray class)
-        self.vertex_array = VertexArray([skyboxVertices])
-
-        # Get Uniform location of shader program
-        names = ['view', 'projection', 'model']
-        self.loc = {n: GL.glGetUniformLocation(self.shader_skybox.glid, n) for n in names}
 
     def draw(self, projection, view, model):
         GL.glUseProgram(self.shader_skybox.glid)
@@ -114,12 +124,11 @@ class Skybox:
         # (last coloumn's top 3 values)
         # for i in range(3):
         #     view[i, 3] = 0
-
         # model = rotate(axis=(1.0, 0.0, 0.0), radians=-55.0)
         # view = translate(z=-3.0)
         # projection = perspective(45.0, 800.0/600.0, 0.1, 100.0)
 
-        self.rotation += (self.ROTATION_SPEED * glfw.get_time())
+        self.rotation = (self.ROTATION_SPEED * glfw.get_time())
         model = rotate(axis=(0, 1, 0), angle=self.rotation)
 
         GL.glUniformMatrix4fv(self.loc['view'], 1, True, view)
@@ -129,19 +138,44 @@ class Skybox:
         # Bind the skybox's VAO
         GL.glBindVertexArray(self.vertex_array.glid)
         # ??? (making no difference)
-        GL.glActiveTexture(GL.GL_TEXTURE0)
+        # GL.glActiveTexture(GL.GL_TEXTURE0)
         # Bind the cubemap texture
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
-        GL.glDrawArrays(GL.GL_TRIANGLES, 0, 36)
+        # GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
 
+        GL.glEnableVertexAttribArray(0)
+        self.bind_textures()
+
+        GL.glDrawArrays(GL.GL_TRIANGLES, 0, 36)
+        GL.glDisableVertexAttribArray(0)
+        GL.glBindVertexArray(0)
         # Set depth function back to default
         GL.glDepthMask(GL.GL_TRUE)
-
         GL.glDepthFunc(GL.GL_LESS)
 
-    # def bind_textures(self):
-    #     GL.glActiveTexture(GL.GL_TEXTURE0)
-    #     GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_cubemap)
-    #     GL.glActiveTexture(GL.GL_TEXTURE1)
-    #     GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.night_texture)
-    #     GL.glUniform1f()
+    def bind_textures(self):
+        self.time = glfw.get_time() * 1000
+        self.time %= 24000
+        if 0 <= self.time < 5000:
+            blend_factor = (self.time - 0) / (5000 - 0)
+            texture1 = self.night_skybox_texture
+            texture2 = self.night_skybox_texture
+        elif 5000 <= self.time < 8000:
+            blend_factor = (self.time - 5000) / (8000 - 5000)
+            texture1 = self.night_skybox_texture
+            texture2 = self.day_skybox_texture
+        elif 8000 <= self.time < 21000:
+            blend_factor = (self.time - 8000) / (21000 - 8000)
+            texture1 = self.day_skybox_texture
+            texture2 = self.day_skybox_texture
+        else:
+            blend_factor = (self.time - 21000) / (24000 - 21000)
+            texture1 = self.day_skybox_texture
+            texture2 = self.night_skybox_texture
+
+        GL.glActiveTexture(GL.GL_TEXTURE0)
+        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture1)
+        GL.glUniform1i(self.loc['skybox'], 0)
+        GL.glActiveTexture(GL.GL_TEXTURE1)
+        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture2)
+        GL.glUniform1i(self.loc['skybox2'], 1)
+        GL.glUniform1f(self.loc['blend_factor'], blend_factor)

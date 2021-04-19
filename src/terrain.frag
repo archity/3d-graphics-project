@@ -27,7 +27,7 @@ void main() {
 
     vec4 total_color = background_texture_colour + blue_texture_colour;
 
-    vec4 color = vec4(0.6, 0.78, 0.70, 1);
+    vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
 
     // Lighting effects for ground (Unused)
 //    vec3 unitNormal = normalize(surfaceNormal);
