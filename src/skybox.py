@@ -65,7 +65,7 @@ face_list = [
 class Skybox:
     def __init__(self, shader_skybox):
         self.rotation = 0
-        self.ROTATION_SPEED = 0.005
+        self.ROTATION_SPEED = 0.0005
 
         self.shader_skybox = shader_skybox
         # -------------------------------Cubemap stuff------------------------------------
@@ -120,6 +120,7 @@ class Skybox:
         # projection = perspective(45.0, 800.0/600.0, 0.1, 100.0)
 
         self.rotation += (self.ROTATION_SPEED * glfw.get_time())
+        self.rotation = self.rotation%360
         model = rotate(axis=(0, 1, 0), angle=self.rotation)
 
         GL.glUniformMatrix4fv(self.loc['view'], 1, True, view)
