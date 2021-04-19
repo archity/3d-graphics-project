@@ -7,8 +7,8 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np
 
 # External, non built-in modules
-from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, \
-    load_textured_phong_mesh_skinned, load_textured
+from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, load_textured, \
+    load_phong_mesh
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnim
 from skybox import Skybox
@@ -97,7 +97,7 @@ def build_graveyard(viewer, shader):
 
     # Graveyard Grass
     graveyard_grass_node = Node(
-        transform=translate(-60, -1, -20) @ scale(0.1, 0.1, 0.1))
+        transform=translate(-60, -1, -20) @ scale(0.07, 0.07, 0.07))
     mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/1/2/Demo_Scene.obj", shader=shader,
                                          tex_file="./../resources/graveyard/1/2/tex.png",
                                          k_a=(.4, .4, .4),
@@ -137,19 +137,138 @@ def build_graveyard(viewer, shader):
         graveyard_cross2_node.add(mesh)
     viewer.add(graveyard_cross2_node)
 
-    # Graveyard Cross 2
-    graveyard_cross2_node = Node(
-        transform=translate(-50, -1, -10) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
-    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
-                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+    # Angel of Death
+    angelofdeath_node = Node(
+        transform=translate(-90, -1, -10) @ scale(0.06, 0.06, 0.06) @ rotate((0, 1, 0), 90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/Angel/Angelofdeath/angelofdeath.obj", shader=shader,
+                                         tex_file="./../resources/Cannon_3/Textures/metal.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
                                          s=4
                                          )
+
     for mesh in mesh_list:
-        graveyard_cross2_node.add(mesh)
-    viewer.add(graveyard_cross2_node)
+        angelofdeath_node.add(mesh)
+    viewer.add(angelofdeath_node)
+
+    # Graveyard Full Scene
+    grave_x = -50
+    grave_y = -1
+    grave_z = -50
+
+    # Graveyard Tree
+    graveyardtree_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/gravetree.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        graveyardtree_node.add(mesh)
+    viewer.add(graveyardtree_node)
+
+    # Grave Ground
+    graveyardground_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/ground.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        graveyardground_node.add(mesh)
+    viewer.add(graveyardground_node)
+
+    # Grave Shovel
+    graveshovel_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/shovel.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        graveshovel_node.add(mesh)
+    viewer.add(graveshovel_node)
+
+    # Grave Coffin
+    gravecoffin_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/coffin.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        gravecoffin_node.add(mesh)
+    viewer.add(gravecoffin_node)
+
+    # Grave Headstone
+    graveheadstone_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/headstone.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        graveheadstone_node.add(mesh)
+    viewer.add(graveheadstone_node)
+
+    # Grave Crypt
+    gravecrypt_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/crypt.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        gravecrypt_node.add(mesh)
+    viewer.add(gravecrypt_node)
+
+    # Grave Grass
+    gravegrass_node = Node(
+        transform=translate(grave_x, grave_y, grave_z) @ scale(4, 4, 4))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/fullscenegraveyard/gravegrass.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/graveyard/fullscenegraveyard/tex.png",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        gravegrass_node.add(mesh)
+    viewer.add(gravegrass_node)
+
 
 
 def circular_motion():
@@ -324,16 +443,22 @@ def main():
     # -------------------------------------------------
     # Archer
     archer_node = Node(
-        transform=translate(35, 0, 0) @ scale(.01, .01, .01) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
-    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
-                              tex_file="./../resources/archer/archer.tga"
-
-                                        )
+        transform=translate(30, -1, 0) @ scale(0.02, 0.02, 0.02) @ rotate((0, 1, 0), -90) @ rotate((0, 0, 1), 0))
+    mesh_list = load_textured("./../resources/archer/archer.fbx", shader=cube_shader,
+                              tex_file="./../resources/archer/archer_all.png")
     for mesh in mesh_list:
         archer_node.add(mesh)
     viewer.add(archer_node)
 
     # -------------------------------------------------
+
+    # Skybox
+    shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
+    viewer.add(Skybox(shader_skybox=shader_skybox))
+
+    # Start playing ambient audio in background
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
     translate_keys = {0: vec(-48, 0, 30), 4: vec(-48, 19, 148)}
@@ -364,13 +489,6 @@ def main():
         bird_node.add(mesh)
     viewer.add(bird_node)
 
-    # Skybox
-    shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
-    viewer.add(Skybox(shader_skybox=shader_skybox))
-
-    # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
 
     # start rendering loop
     viewer.run()
