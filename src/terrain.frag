@@ -3,6 +3,7 @@
 uniform sampler2D diffuse_map;
 uniform sampler2D blue_texture;
 uniform sampler2D blendmap;
+uniform vec3 fog_colour;
 
 in vec2 frag_tex_coords;
 
@@ -27,7 +28,7 @@ void main() {
 
     vec4 total_color = background_texture_colour + blue_texture_colour;
 
-    vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
+    // vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
 
     // Lighting effects for ground (Unused)
 //    vec3 unitNormal = normalize(surfaceNormal);
@@ -37,5 +38,5 @@ void main() {
 //    vec3 diffuse = brightness * vec3(color);
 
     out_color = total_color;
-    out_color = mix(color, out_color, visibility);
+    out_color = mix(vec4(fog_colour, 1), out_color, visibility);
 }

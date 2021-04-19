@@ -132,10 +132,10 @@ class Shader:
                 print(GL.glGetProgramInfoLog(self.glid).decode('ascii'))
                 sys.exit(1)
 
-    def __del__(self):
-        GL.glUseProgram(0)
-        if self.glid:  # if this is a valid shader object
-            GL.glDeleteProgram(self.glid)  # object dies => destroy GL object
+    # def __del__(self):
+    #     GL.glUseProgram(0)
+    #     if self.glid:  # if this is a valid shader object
+    #         GL.glDeleteProgram(self.glid)  # object dies => destroy GL object
 
 
 class VertexArray:
@@ -183,9 +183,9 @@ class VertexArray:
         GL.glBindVertexArray(self.glid)
         self.draw_command(primitive, *self.arguments)
 
-    def __del__(self):  # object dies => kill GL array and buffers from GPU
-        GL.glDeleteVertexArrays(1, [self.glid])
-        GL.glDeleteBuffers(len(self.buffers), self.buffers)
+    # def __del__(self):  # object dies => kill GL array and buffers from GPU
+    #     GL.glDeleteVertexArrays(1, [self.glid])
+    #     GL.glDeleteBuffers(len(self.buffers), self.buffers)
 
 
 # ------------  Mesh is a core drawable, can be basis for most objects --------
@@ -371,8 +371,8 @@ class Texture:
         except FileNotFoundError:
             print("ERROR: unable to load texture file %s" % tex_file)
 
-    def __del__(self):  # delete GL texture from GPU when object dies
-        GL.glDeleteTextures(self.glid)
+    # def __del__(self):  # delete GL texture from GPU when object dies
+    #     GL.glDeleteTextures(self.glid)
 
 
 # -------------- Example texture plane class ----------------------------------
@@ -391,12 +391,13 @@ class TexturedPlane(Mesh):
         self.background_texture_file = background_texture_file
         self.road_texture_file = road_texture_file
         self.blendmap_file = blendmap_file
+        self.fog_colour = FogColour()
 
         vertices, texture_coords, normals, indices = self.create_attributes(self.HMAP_SIZE, hmap_tex=hmap_tex)
 
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
-        self.names = ['diffuse_map', 'blue_texture', 'blendmap']
+        self.names = ['diffuse_map', 'blue_texture', 'blendmap', 'fog_colour']
         self.loc1 = {n: GL.glGetUniformLocation(shader.glid, n) for n in self.names}
 
         # interactive toggles
@@ -478,6 +479,7 @@ class TexturedPlane(Mesh):
         GL.glUniform1i(self.loc1['diffuse_map'], 0)
         GL.glUniform1i(self.loc1['blue_texture'], 1)
         GL.glUniform1i(self.loc1['blendmap'], 2)
+        GL.glUniform3fv(self.loc1['fog_colour'], 1, self.fog_colour.get_colour())
 
     def bind_textures(self):
         GL.glActiveTexture(GL.GL_TEXTURE0)
@@ -562,6 +564,7 @@ class TexturedPhongMesh:
         self.texture = tex
         self.vertex_array = VertexArray(attributes=attributes, index=faces)
         self.shader = shader
+        self.fog_colour = FogColour()
 
         self.k_a = k_a
         self.k_d = k_d
@@ -573,7 +576,7 @@ class TexturedPhongMesh:
         GL.glUseProgram(self.shader.glid)
 
         # projection geometry
-        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's']
+        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's', 'fog_colour']
         loc = {n: GL.glGetUniformLocation(self.shader.glid, n) for n in names}
 
         # model3x3 = model[0:3, 0:3]
@@ -587,6 +590,7 @@ class TexturedPhongMesh:
         GL.glUniform3fv(loc['k_d'], 1, self.k_d)
         GL.glUniform3fv(loc['k_s'], 1, self.k_s)
         GL.glUniform1f(loc['s'], max(self.s, 0.001))
+        GL.glUniform3fv(loc['fog_colour'], 1, self.fog_colour.get_colour())
         # GL.glUniformMatrix4fv(loc['nit_matrix'], 1, True, nit_matrix)
 
         # ----------------
@@ -667,3 +671,39 @@ def load_phong_mesh(file, shader, light_dir, tex_file):
     size = sum((mesh.mNumFaces for mesh in scene.mMeshes))
     print('Loaded %s\t(%d meshes, %d faces)' % (file, len(meshes), size))
     return meshes
+
+
+class FogColour:
+    def __init__(self):
+        self.colour = [0, 0, 0]
+        self.time = 0
+        self.factor = (1 / 6000) * 12
+        self.day_color = [0.6, 0.7, 0.7]
+        self.night_colour = [0.2, 0.3, 0.3]
+
+    def get_colour(self):
+        self.time = glfw.get_time() * 1000
+        self.time %= 24000
+        if 0 <= self.time < 6000:
+            self.colour = [0.2, 0.3, 0.3]
+            # print(self.colour)
+
+        elif 6000 <= self.time < 12000:
+            # if self.colour[0] < self.day_color[0]:
+            self.colour[0] += self.factor
+            self.colour[1] += self.factor
+            self.colour[2] += self.factor
+            # print(self.colour)
+
+        elif 12000 <= self.time < 18000:
+            self.colour = [0.6, 0.7, 0.7]
+            # print(self.colour)
+
+        else:
+            # if self.colour[0] > self.night_colour[0]:
+            self.colour[0] -= self.factor
+            self.colour[1] -= self.factor
+            self.colour[2] -= self.factor
+            # print(self.colour)
+
+        return self.colour

@@ -7,7 +7,7 @@ in float visibility;
 uniform samplerCube skybox;
 uniform samplerCube skybox2;
 
-uniform vec3 skyColor;
+uniform vec3 sky_color;
 uniform float blend_factor;
 
 const float lower_limit = 0.0;
@@ -24,8 +24,8 @@ void main()
 
     float factor = (TexCoords.y - lower_limit) / (upper_limit - lower_limit);
     factor = clamp(factor, 0.0, 1.0);
-    FragColor = mix(color, final_color, factor);
+    FragColor = mix(vec4(sky_color, 1), final_color, factor);
 
-    FragColor = mix(FragColor, color, visibility);
+    FragColor = mix(FragColor, vec4(sky_color, 1), visibility);
 
 }

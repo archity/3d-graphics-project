@@ -16,6 +16,7 @@ uniform vec3 k_a;
 uniform vec3 k_s;
 //// uniform vec3 r;
 uniform float s;
+uniform vec3 fog_colour;
 
 // world camera position
 uniform vec3 w_camera_position;
@@ -28,7 +29,7 @@ uniform vec3 skyColor;
 
 void main() {
 
-    vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
+    // vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
 
     vec3 n = normalize(w_normal);
     vec3 l = normalize(-vec3(-1, -1, -1));
@@ -48,7 +49,7 @@ void main() {
     // 2. The Phong model
     //out_color = vec4(ambient_color, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
 
-    out_color = mix(color, out_color, visibility);
+    out_color = mix(vec4(fog_colour, 1), out_color, visibility);
     //vec3(texture(diffuse_map, frag_uv))
 
     // 3. Point Light

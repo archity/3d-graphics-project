@@ -6,7 +6,7 @@ Skybox
 import OpenGL.GL as GL
 import numpy as np
 from PIL import Image
-from core import VertexArray
+from core import VertexArray, FogColour
 import glfw
 from transform import translate, perspective, rotate, lookat
 
@@ -69,6 +69,7 @@ class Skybox:
         self.ROTATION_SPEED = 1
         self.shader_skybox = shader_skybox
         self.time = 0
+        self.fog_colour = FogColour()
 
         day_skybox = "./../resources/skybox2/"
         night_skybox = "./../resources/skybox3/"
@@ -82,7 +83,7 @@ class Skybox:
         self.vertex_array = VertexArray([skyboxVertices])
 
         # Get Uniform location of shader program
-        names = ['view', 'projection', 'model', 'blend_factor', 'skybox', 'skybox2']
+        names = ['view', 'projection', 'model', 'blend_factor', 'skybox', 'skybox2', 'sky_color']
         self.loc = {n: GL.glGetUniformLocation(self.shader_skybox.glid, n) for n in names}
 
     def load_cubemap(self, texture_file, tex_num):
@@ -155,24 +156,29 @@ class Skybox:
         GL.glDepthFunc(GL.GL_LESS)
 
     def bind_textures(self):
+        color = (0.2, 0.20, 0.20)
         self.time = glfw.get_time() * 1000
         self.time %= 24000
         if 0 <= self.time < 5000:
             blend_factor = (self.time - 0) / (5000 - 0)
             texture1 = self.night_skybox_texture
             texture2 = self.night_skybox_texture
+            color = (0.2, 0.20, 0.20)
         elif 5000 <= self.time < 8000:
             blend_factor = (self.time - 5000) / (8000 - 5000)
             texture1 = self.night_skybox_texture
             texture2 = self.day_skybox_texture
+            color = (0.4, 0.45, 0.45)
         elif 8000 <= self.time < 21000:
             blend_factor = (self.time - 8000) / (21000 - 8000)
             texture1 = self.day_skybox_texture
             texture2 = self.day_skybox_texture
+            color = (0.6, 0.70, 0.70)
         else:
             blend_factor = (self.time - 21000) / (24000 - 21000)
             texture1 = self.day_skybox_texture
             texture2 = self.night_skybox_texture
+            color = (0.4, 0.45, 0.45)
 
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture1)
@@ -181,3 +187,4 @@ class Skybox:
         GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture2)
         GL.glUniform1i(self.loc['skybox2'], 1)
         GL.glUniform1f(self.loc['blend_factor'], blend_factor)
+        GL.glUniform3fv(self.loc['sky_color'], 1, self.fog_colour.get_colour())
