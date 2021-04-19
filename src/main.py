@@ -7,7 +7,8 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np
 
 # External, non built-in modules
-from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh
+from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, \
+    load_textured_phong_mesh_skinned, load_textured
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnim
 from skybox import Skybox
@@ -311,6 +312,7 @@ def main():
     cube_shader = Shader("texture.vert", "texture.frag")
     phong_shader = Shader("phong.vert", "phong.frag")
     lambertian_shader = Shader("lambertian.vert", "lambertian.frag")
+    skinning_shader = Shader("skinning.vert", "color.frag")
 
     build_terrain(viewer, shader=terrain_shader)
     build_tree(viewer, shader=lambertian_shader)
@@ -321,23 +323,17 @@ def main():
 
     # -------------------------------------------------
     # Archer
-    # archer_node = Node(
-    #     transform=translate(35, 0, 0) @ scale(0.02, 0.02, 0.02) @ rotate((0, 1, 0), -90) @ rotate((0, 0, 1), 0))
-    # mesh_list = load_textured("./../resources/archer/archer_female.fbx", shader=cube_shader,
-    #                           tex_file="./../resources/archer/archer_female.png")
-    # for mesh in mesh_list:
-    #     archer_node.add(mesh)
-    # viewer.add(archer_node)
+    archer_node = Node(
+        transform=translate(35, 0, 0) @ scale(.01, .01, .01) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
+                              tex_file="./../resources/archer/archer.tga"
+
+                                        )
+    for mesh in mesh_list:
+        archer_node.add(mesh)
+    viewer.add(archer_node)
 
     # -------------------------------------------------
-
-    # Skybox
-    shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
-    viewer.add(Skybox(shader_skybox=shader_skybox))
-
-    # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
 
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
     translate_keys = {0: vec(-48, 0, 30), 4: vec(-48, 19, 148)}
@@ -368,6 +364,13 @@ def main():
         bird_node.add(mesh)
     viewer.add(bird_node)
 
+    # Skybox
+    shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
+    viewer.add(Skybox(shader_skybox=shader_skybox))
+
+    # Start playing ambient audio in background
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()
