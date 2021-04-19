@@ -152,9 +152,10 @@ def build_graveyard(viewer, shader):
 
 
 def circ_motion():
-    r = 5
-    speed = 5
+    r = 30
+    speed = 10
     angle = (glfw.get_time() * speed) % 360
+    angle = 180 + angle
     x = r * np.cos(np.deg2rad(angle))
     y = r/2 * np.sin(np.deg2rad(angle))
     z = r * np.sin(np.deg2rad(angle))
