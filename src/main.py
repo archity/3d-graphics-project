@@ -151,10 +151,11 @@ def build_graveyard(viewer, shader):
     viewer.add(graveyard_cross2_node)
 
 
-def circ_motion():
-    r = 5
-    speed = 5
+def circular_motion():
+    r = 30
+    speed = 10
     angle = (glfw.get_time() * speed) % 360
+    angle = 180 + angle
     x = r * np.cos(np.deg2rad(angle))
     y = r/2 * np.sin(np.deg2rad(angle))
     z = r * np.sin(np.deg2rad(angle))
@@ -355,7 +356,7 @@ def main():
     viewer.add(cannon_ball_node)
 
     # Bird
-    bird_node = ProceduralAnim(circ_motion)
+    bird_node = ProceduralAnim(circular_motion)
     mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=phong_shader,
                                          tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
