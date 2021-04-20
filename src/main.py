@@ -8,7 +8,7 @@ import numpy as np
 
 # External, non built-in modules
 from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, load_textured, \
-    load_phong_mesh
+    load_phong_mesh, load_textured_phong_mesh_skinned
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnim
 from skybox import Skybox
@@ -442,20 +442,20 @@ def main():
 
     # -------------------------------------------------
     # Archer
-    # archer_node = Node(
-    #
-    #     transform=translate(35, 0, 0) @ scale(.01, .01, .01) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
-    # mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
-    #                           tex_file="./../resources/archer/archer.tga",
-    #                                      k_a=(1, 1, 1),
-    #                                      k_d=(.6, .6, .6),
-    #                                      k_s=(.1, .1, .1),
-    #                                      s=4
-    #                                     )
-    #
-    # for mesh in mesh_list:
-    #     archer_node.add(mesh)
-    # viewer.add(archer_node)
+    archer_node = Node(
+
+        transform=translate(35, 0, 0) @ scale(.02, .02, .02) @ rotate((1, 0, 0), 0) @ rotate((0, 0, 1), 0))
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
+                              tex_file="./../resources/archer/archer.tga",
+                                         k_a=(1, 1, 1),
+                                         k_d=(.6, .6, .6),
+                                         k_s=(.1, .1, .1),
+                                         s=4
+                                        )
+
+    for mesh in mesh_list:
+        archer_node.add(mesh)
+    viewer.add(archer_node)
 
     # -------------------------------------------------
 
