@@ -7,14 +7,15 @@ import glfw  # lean window system wrapper for OpenGL
 import numpy as np
 
 # External, non built-in modules
-from core import Shader, Viewer, Node, multi_load_textured, TexturedPlane, load_textured_phong_mesh, load_textured, \
-    load_phong_mesh, load_textured_phong_mesh_skinned
+from viewer import Viewer
+from shader import Shader
+from node import Node
+from texturedplane import TexturedPlane
+from core import multi_load_textured, load_textured_phong_mesh, load_textured_phong_mesh_skinned
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnim
 from skybox import Skybox
-from transform import (quaternion)
-from transform import rotate, translate, scale
-from transform import vec
+from transform import quaternion, rotate, translate, scale, vec
 import simpleaudio as sa
 
 
@@ -270,14 +271,13 @@ def build_graveyard(viewer, shader):
     viewer.add(gravegrass_node)
 
 
-
 def circular_motion():
     r = 30
     speed = 10
     angle = (glfw.get_time() * speed) % 360
     angle = 180 + angle
     x = r * np.cos(np.deg2rad(angle))
-    y = r/2 * np.sin(np.deg2rad(angle))
+    y = r / 2 * np.sin(np.deg2rad(angle))
     z = r * np.sin(np.deg2rad(angle))
     trans_mat = translate(x, y, z) @ rotate((0, 1, 0), 270 - angle)
     keyframe_transform = trans_mat
@@ -423,56 +423,31 @@ def build_church(viewer, shader):
     viewer.add(church_node)
 
 
-def main():
-    """ create a window, add scene objects, then run rendering loop """
-
-    viewer = Viewer(width=1920, height=1080)
-    terrain_shader = Shader("terrain.vert", "terrain.frag")
-    cube_shader = Shader("texture.vert", "texture.frag")
-    phong_shader = Shader("phong.vert", "phong.frag")
-    lambertian_shader = Shader("lambertian.vert", "lambertian.frag")
-    skinning_shader = Shader("skinning.vert", "color.frag")
-
-    build_terrain(viewer, shader=terrain_shader)
-    build_tree(viewer, shader=lambertian_shader)
-    build_graveyard(viewer, shader=phong_shader)
-    build_houses(viewer, shader=phong_shader)
-    build_castle(viewer, shader=phong_shader)
-    build_church(viewer, shader=phong_shader)
-
-    # -------------------------------------------------
+def add_characters(viewer, shader):
     # Archer
     archer_node = Node(
 
         transform=translate(35, 0, 0) @ scale(.02, .02, .02) @ rotate((1, 0, 0), 0) @ rotate((0, 0, 1), 0))
-    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
-                              tex_file="./../resources/archer/archer.tga",
-                                         k_a=(1, 1, 1),
-                                         k_d=(.6, .6, .6),
-                                         k_s=(.1, .1, .1),
-                                         s=4
-                                        )
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
+                                                 tex_file="./../resources/archer/archer.tga",
+                                                 k_a=(1, 1, 1),
+                                                 k_d=(.6, .6, .6),
+                                                 k_s=(.1, .1, .1),
+                                                 s=4
+                                                 )
 
     for mesh in mesh_list:
         archer_node.add(mesh)
     viewer.add(archer_node)
 
-    # -------------------------------------------------
 
-    # Skybox
-    shader_skybox = Shader(vertex_source="./skybox.vert", fragment_source="./skybox.frag")
-    viewer.add(Skybox(shader_skybox=shader_skybox))
-
-    # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
-
+def add_animations(viewer, shader):
     # Key Frame animation for Tower Cannon Ball (Cannon_1)
     translate_keys = {0: vec(-48, 0, 30), 4: vec(-48, 19, 148)}
     rotate_keys = {0: quaternion(), 4: quaternion()}
     scale_keys = {0: 2, 4: 2}
     cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=phong_shader,
+    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=shader,
                                          tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
@@ -485,7 +460,7 @@ def main():
 
     # Bird
     bird_node = ProceduralAnim(circular_motion)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=phong_shader,
+    mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=shader,
                                          tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
@@ -497,11 +472,40 @@ def main():
     viewer.add(bird_node)
 
 
+def main():
+    """ create a window, add scene objects, then run rendering loop """
+
+    viewer = Viewer(width=1920, height=1080)
+    terrain_shader = Shader("shaders/terrain.vert", "shaders/terrain.frag")
+    cube_shader = Shader("shaders/texture.vert", "shaders/texture.frag")
+    phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
+    lambertian_shader = Shader("shaders/lambertian.vert", "shaders/lambertian.frag")
+    skinning_shader = Shader("shaders/skinning.vert", "shaders/skinning.frag")
+
+    build_terrain(viewer, shader=terrain_shader)
+    build_tree(viewer, shader=lambertian_shader)
+    build_graveyard(viewer, shader=phong_shader)
+    build_houses(viewer, shader=phong_shader)
+    build_castle(viewer, shader=phong_shader)
+    build_church(viewer, shader=phong_shader)
+    add_characters(viewer, shader=skinning_shader)
+    add_animations(viewer, shader=phong_shader)
+
+    # -------------------------------------------------
+
+    # Start playing ambient audio in background
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
+
+    # Skybox
+    shader_skybox = Shader(vertex_source="./shaders/skybox.vert", fragment_source="./shaders/skybox.frag")
+    viewer.add(Skybox(shader_skybox=shader_skybox))
+
     # start rendering loop
     viewer.run()
 
 
 if __name__ == '__main__':
-    glfw.init()  # initialize window system glfw
-    main()  # main function keeps variables locally scoped
-    glfw.terminate()  # destroy all glfw windows and GL contexts
+    glfw.init()         # initialize window system glfw
+    main()              # main function keeps variables locally scoped
+    glfw.terminate()    # destroy all glfw windows and GL contexts

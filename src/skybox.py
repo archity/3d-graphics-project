@@ -2,12 +2,13 @@
 """
 Skybox
 """
-
+import glfw
 import OpenGL.GL as GL
 import numpy as np
 from PIL import Image
-from core import VertexArray, FogColour
-import glfw
+
+from vertexarray import VertexArray
+from fog import FogColour
 from transform import translate, perspective, rotate, lookat
 
 # Skybox vertices
