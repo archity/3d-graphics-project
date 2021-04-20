@@ -57,11 +57,18 @@ class TransformKeyFrames:
 class KeyFrameControlNode(Node):
     """ Place node with transform keys above a controlled subtree """
 
-    def __init__(self, translate_keys, rotate_keys, scale_keys):
+    def __init__(self, translate_keys, rotate_keys, scale_keys, loop=False):
         super().__init__()
         self.keyframes = TransformKeyFrames(translate_keys, rotate_keys, scale_keys)
+        self.loop = loop
 
     def draw(self, projection, view, model):
         """ When redraw requested, interpolate our node transform from keys """
-        self.transform = self.keyframes.value(glfw.get_time())
+        time = glfw.get_time()
+        if self.loop == True:
+            # Get the translate key's last time instance,
+            # and use that to loop over the time
+            time = glfw.get_time() % self.keyframes.translate_keys.times[-1]
+
+        self.transform = self.keyframes.value(time)
         super().draw(projection, view, model)

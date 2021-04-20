@@ -153,7 +153,7 @@ def load_phong_mesh(file, shader, light_dir):
     return meshes
 
 
-def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s):
+def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s, delay=None):
     try:
         pp = assimpcy.aiPostProcessSteps
         flags = pp.aiProcess_Triangulate | pp.aiProcess_GenSmoothNormals
@@ -204,7 +204,7 @@ def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s):
         """ Recursively builds nodes for our graph, matching assimp nodes """
         trs_keyframes = transform_keyframes.get(assimp_node.mName, (None,))
         skin_node = SkinningControlNode(*trs_keyframes,
-                                        transform=assimp_node.mTransformation)
+                                        transform=assimp_node.mTransformation, delay=delay)
         nodes[assimp_node.mName] = skin_node
         for mesh_index in assimp_node.mMeshes:
             nodes_per_mesh_id[mesh_index].append(skin_node)
@@ -231,8 +231,8 @@ def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s):
         bone_offsets = [bone.mOffsetMatrix for bone in mesh.mBones]
 
         # Initialize mat for phong and texture
-        mat = scene.mMaterials[mesh.mMaterialIndex].properties
-        assert mat['diffuse_map'], "Trying to map using a textureless material"
+        # mat = scene.mMaterials[mesh.mMaterialIndex].properties
+        # assert mat['diffuse_map'], "Trying to map using a textureless material"
 
     # meshes = []
     for mesh in scene.mMeshes:

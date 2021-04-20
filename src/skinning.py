@@ -38,15 +38,23 @@ class SkinnedMesh(Mesh):
 class SkinningControlNode(Node):
     """ Place node with transform keys above a controlled subtree """
 
-    def __init__(self, *keys, transform=identity()):
+    def __init__(self, *keys, transform=identity(), delay=None):
         super().__init__(transform=transform)
         self.keyframes = TransformKeyFrames(*keys) if keys[0] else None
         self.world_transform = identity()
+        # self.loop = loop
+        self.time = glfw.get_time()
+
+        # Delay between the animation loop
+        self.delay = delay
 
     def draw(self, projection, view, model):
         """ When redraw requested, interpolate our node transform from keys """
+        self.time = glfw.get_time()
         if self.keyframes:  # no keyframe update should happens if no keyframes
-            self.transform = self.keyframes.value(glfw.get_time())
+            if self.delay is not None:
+                self.time = glfw.get_time() % self.delay
+            self.transform = self.keyframes.value(self.time)
 
         # store world transform for skinned meshes using this node as bone
         self.world_transform = model @ self.transform
