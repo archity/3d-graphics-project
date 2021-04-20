@@ -326,8 +326,11 @@ def main():
     archer_node = Node(
         transform=translate(35, 0, 0) @ scale(.01, .01, .01) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
     mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=skinning_shader,
-                              tex_file="./../resources/archer/archer.tga"
-
+                              tex_file="./../resources/archer/archer.tga",
+                                         k_a=(1, 1, 1),
+                                         k_d=(.6, .6, .6),
+                                         k_s=(.1, .1, .1),
+                                         s=4
                                         )
     for mesh in mesh_list:
         archer_node.add(mesh)
