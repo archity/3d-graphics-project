@@ -19,6 +19,9 @@ uniform sampler2D diffuse_map;
 // output fragment color for OpenGL
 out vec4 out_color;
 
+uniform vec3 fog_colour;
+in float visibility;
+
 void main() {
     vec3 n = normalize(w_normal);
     vec3 l = normalize(-vec3(-1, -1, -1));
@@ -31,5 +34,5 @@ void main() {
     vec3 ambient_color = k_a * vec3(texture(diffuse_map, frag_uv));
     out_color = vec4(ambient_color, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
 
-    // out_color = mix(vec4(fog_colour, 1), out_color, visibility);
+    out_color = mix(vec4(fog_colour, 1), out_color, visibility);
 }

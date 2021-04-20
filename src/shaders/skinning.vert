@@ -22,7 +22,15 @@ out vec2 frag_uv;
 // position and normal for the fragment shader, in WORLD coordinates
 out vec3 w_position, w_normal;   // in world coordinates
 
+// Fog visibility variables
+const float density = 0.007;
+const float gradient = 1.5;
+out float visibility;
+
 void main() {
+
+    vec4 worldPosition = model * vec4(position, 1.0);
+    vec4 positionRelativeToCam = view * worldPosition;
 
     // ------ creation of the skinning deformation matrix
     mat4 skin_matrix = mat4(0);
@@ -40,6 +48,10 @@ void main() {
     // fragment normal in world coordinates
     mat3 nit_matrix = transpose(inverse(mat3(model)));
     w_normal = normalize(nit_matrix * normal);
+
+    float distance = length(positionRelativeToCam.xyz);
+    visibility = exp(-pow((distance * density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 
     // fragment_color = color;
 }

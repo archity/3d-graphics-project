@@ -160,6 +160,7 @@ class TexturedPhongMeshSkinned:
         self.k_d = k_d
         self.k_s = k_s
         self.s = s
+        self.fog_colour = FogColour()
         # ----------------
         self.bone_nodes = bone_nodes
         self.bone_offsets = np.array(bone_offsets, np.float32)
