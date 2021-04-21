@@ -141,8 +141,8 @@ def load_phong_mesh(file, shader, light_dir):
     for mesh in scene.mMeshes:
         mat = scene.mMaterials[mesh.mMaterialIndex].properties
         mesh = PhongMesh(shader, [mesh.mVertices, mesh.mNormals], mesh.mFaces,
-                         k_d=mat.get('COLOR_DIFFUSE', (1, 1, 1)),
-                         k_s=mat.get('COLOR_SPECULAR', (1, 1, 1)),
+                         k_d=mat.get('COLOR_DIFFUSE', (0.06995355, 0.1218565, 0.04788811)),
+                         k_s=mat.get('COLOR_SPECULAR', (0.25, 0.25, 0.25)),
                          k_a=mat.get('COLOR_AMBIENT', (0, 0, 0)),
                          s=mat.get('SHININESS', 16.),
                          light_dir=light_dir)

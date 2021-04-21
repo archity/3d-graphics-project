@@ -2,6 +2,7 @@
 
 uniform sampler2D diffuse_map;
 uniform sampler2D blue_texture;
+uniform sampler2D red_texture;
 uniform sampler2D blendmap;
 uniform vec3 fog_colour;
 
@@ -25,8 +26,9 @@ void main() {
     vec2 tiled_coords = frag_tex_coords * 100;
     vec4 background_texture_colour = texture(diffuse_map, tiled_coords) * back_texture_amount;
     vec4 blue_texture_colour = texture(blue_texture, tiled_coords) * blend_map_color.b;
+    vec4 red_texture_colour = texture(red_texture, tiled_coords) * blend_map_color.r;
 
-    vec4 total_color = background_texture_colour + blue_texture_colour;
+    vec4 total_color = background_texture_colour + blue_texture_colour + red_texture_colour;
 
     // vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
 

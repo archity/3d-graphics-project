@@ -14,7 +14,7 @@ from fog import FogColour
 class TexturedPlane(Mesh):
     """ Simple first textured object """
 
-    def __init__(self, background_texture_file, road_texture_file, blendmap_file, shader, size, hmap_file):
+    def __init__(self, background_texture_file, road_texture_file, road2_texture_file,  blendmap_file, shader, size, hmap_file):
 
         # Load heightmap file
         hmap_tex = np.asarray(Image.open(hmap_file).convert('RGB'))
@@ -25,6 +25,7 @@ class TexturedPlane(Mesh):
         self.HMAP_SIZE = hmap_tex.shape[0]  # 256
         self.background_texture_file = background_texture_file
         self.road_texture_file = road_texture_file
+        self.road2_texture_file = road2_texture_file
         self.blendmap_file = blendmap_file
         self.fog_colour = FogColour()
 
@@ -32,7 +33,7 @@ class TexturedPlane(Mesh):
 
         super().__init__(shader, [vertices, texture_coords, normals], indices)
 
-        self.names = ['diffuse_map', 'blue_texture', 'blendmap', 'fog_colour']
+        self.names = ['diffuse_map', 'blue_texture', 'red_texture', 'blendmap', 'fog_colour']
         self.loc1 = {n: GL.glGetUniformLocation(shader.glid, n) for n in self.names}
 
         # interactive toggles
@@ -46,6 +47,7 @@ class TexturedPlane(Mesh):
         # setup texture and upload it to GPU
         self.background_texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
         self.road_texture = Texture(self.road_texture_file, self.wrap_mode, *self.filter_mode)
+        self.road2_texture = Texture(self.road2_texture_file, self.wrap_mode, *self.filter_mode)
         self.blendmap_texture = Texture(self.blendmap_file, self.wrap_mode, *self.filter_mode)
 
     def create_attributes(self, size, hmap_tex):
@@ -113,7 +115,8 @@ class TexturedPlane(Mesh):
     def connect_texture_units(self):
         GL.glUniform1i(self.loc1['diffuse_map'], 0)
         GL.glUniform1i(self.loc1['blue_texture'], 1)
-        GL.glUniform1i(self.loc1['blendmap'], 2)
+        GL.glUniform1i(self.loc1['red_texture'], 2)
+        GL.glUniform1i(self.loc1['blendmap'], 3)
         GL.glUniform3fv(self.loc1['fog_colour'], 1, self.fog_colour.get_colour())
 
     def bind_textures(self):
@@ -122,4 +125,6 @@ class TexturedPlane(Mesh):
         GL.glActiveTexture(GL.GL_TEXTURE1)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.road_texture.glid)
         GL.glActiveTexture(GL.GL_TEXTURE2)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.road2_texture.glid)
+        GL.glActiveTexture(GL.GL_TEXTURE3)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.blendmap_texture.glid)
