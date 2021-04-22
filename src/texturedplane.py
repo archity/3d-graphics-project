@@ -8,6 +8,7 @@ from PIL import Image
 from mesh import Mesh
 from texture import Texture
 from fog import FogColour
+from transform  import normalized
 
 
 # -------------- Example texture plane class ----------------------------------
@@ -62,8 +63,8 @@ class TexturedPlane(Mesh):
                 vertices.append([(j / (size - 1)) * 1000,
                                  self.get_height(i, j, image=hmap_tex),
                                  (i / (size - 1)) * 1000])
-                # print(self.get_height(i, j, image=hmap_tex))
-                normals.append([0, 1, 0])
+                normals.append(self.calculate_normal(x=j, z=i, hmap_image=hmap_tex))
+                # normals.append([0, 1, 0])
                 texture_coords.append([j / (size - 1), i / (size - 1)])
 
         # Convert to numpy array list
@@ -83,6 +84,20 @@ class TexturedPlane(Mesh):
         indices = np.array(indices)
 
         return vertices, texture_coords, normals, indices
+
+    def calculate_normal(self, x, z, hmap_image):
+        """
+        Calculate normals based on current point's neightbours.
+        :param x: x coordinate
+        :param z: z coordinate
+        :param hmap_image: the heightmap image
+        :return: normalized calculated normals
+        """
+        height_l = self.get_height(x-1, z, image=hmap_image)
+        height_r = self.get_height(x+1, z, hmap_image)
+        height_d = self.get_height(x, z-1, hmap_image)
+        height_u = self.get_height(x, z+1, hmap_image)
+        return normalized(np.array([height_l-height_r, 2.0, height_d-height_u]))
 
     def get_height(self, x, z, image):
         if x < 0 or x >= image.shape[0] or z < 0 or z >= image.shape[0]:
