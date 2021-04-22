@@ -1,11 +1,12 @@
 import glfw
+import numpy as np
 
 from node import Node
 from transform import rotate, translate, scale
 from bisect import bisect_left
 from transform import (quaternion_slerp, quaternion_matrix, quaternion,
                        quaternion_from_euler, lerp)
-
+import simpleaudio as sa
 
 class KeyFrames:
     """ Stores keyframe pairs for any value type with interpolation_function"""
@@ -61,6 +62,11 @@ class KeyFrameControlNode(Node):
         super().__init__()
         self.keyframes = TransformKeyFrames(translate_keys, rotate_keys, scale_keys)
         self.loop = loop
+        self.fire = False
+        self.ball_path = np.arange(start=self.keyframes.translate_keys.times[0],
+                                   stop=self.keyframes.translate_keys.times[-1],
+                                   step=0.05)
+        self.path_iterator = 1
 
     def draw(self, projection, view, model):
         """ When redraw requested, interpolate our node transform from keys """
@@ -69,6 +75,19 @@ class KeyFrameControlNode(Node):
             # Get the translate key's last time instance,
             # and use that to loop over the time
             time = glfw.get_time() % self.keyframes.translate_keys.times[-1]
-
+        if self.fire == True and self.loop == False:
+            time = self.ball_path[self.path_iterator]
+            self.path_iterator = self.path_iterator + 1
+            # print(time)
+            if time >= self.keyframes.translate_keys.times[-1] - 0.05:
+                self.fire = False
+                self.path_iterator = 1
         self.transform = self.keyframes.value(time)
         super().draw(projection, view, model)
+
+    def key_handler(self, key):
+        # For cannonball firing
+        if key == glfw.KEY_F:
+            self.fire = True
+            wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/ee2_cannon_low.wav")
+            wave_obj.play()

@@ -551,27 +551,27 @@ def build_church(viewer, shader):
 
 def add_characters(viewer, shader):
     # Archer
-    keyframe_archer_node = KeyFrameControlNode(
-        translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
-        rotate_keys={0: quaternion(), 1: quaternion()},
-        scale_keys={0: 1, 1: 1},
-        loop=True
-    )
-    size = 0.015
-    archer_node = Node(
-        transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
-    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
-                                                 tex_file="./../resources/archer/archer.tga",
-                                                 k_a=(1, 1, 1),
-                                                 k_d=(.6, .6, .6),
-                                                 k_s=(.1, .1, .1),
-                                                 s=4, delay=0.5
-                                                 )
-
-    for mesh in mesh_list:
-        archer_node.add(mesh)
-    keyframe_archer_node.add(archer_node)
-    viewer.add(keyframe_archer_node)
+    # keyframe_archer_node = KeyFrameControlNode(
+    #     translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
+    #     rotate_keys={0: quaternion(), 1: quaternion()},
+    #     scale_keys={0: 1, 1: 1},
+    #     loop=True
+    # )
+    # size = 0.015
+    # archer_node = Node(
+    #     transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
+    # mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
+    #                                              tex_file="./../resources/archer/archer.tga",
+    #                                              k_a=(1, 1, 1),
+    #                                              k_d=(.6, .6, .6),
+    #                                              k_s=(.1, .1, .1),
+    #                                              s=4, delay=0.5
+    #                                              )
+    #
+    # for mesh in mesh_list:
+    #     archer_node.add(mesh)
+    # keyframe_archer_node.add(archer_node)
+    # viewer.add(keyframe_archer_node)
 
 
     # Farmer
@@ -632,7 +632,7 @@ def add_animations(viewer, shader):
 def main():
     """ create a window, add scene objects, then run rendering loop """
 
-    viewer = Viewer(width=1920, height=1080)
+    viewer = Viewer(width=1280, height=720)
     terrain_shader = Shader("shaders/terrain.vert", "shaders/terrain.frag")
     cube_shader = Shader("shaders/texture.vert", "shaders/texture.frag")
     phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
@@ -640,7 +640,7 @@ def main():
     skinning_shader = Shader("shaders/skinning.vert", "shaders/skinning.frag")
 
     build_terrain(viewer, shader=terrain_shader)
-    build_tree(viewer, shader=phong_shader)
+    build_tree(viewer, shader=lambertian_shader)
     build_graveyard(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
     build_castle(viewer, shader=phong_shader)
@@ -650,13 +650,13 @@ def main():
 
     # -------------------------------------------------
 
-    # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    # wave_obj.play()
-
     # Skybox
     shader_skybox = Shader(vertex_source="./shaders/skybox.vert", fragment_source="./shaders/skybox.frag")
     viewer.add(Skybox(shader_skybox=shader_skybox))
+
+    # Start playing ambient audio in background
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()
