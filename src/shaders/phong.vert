@@ -1,22 +1,25 @@
 #version 330 core
 
+const int NUM_LIGHT_SRC = 3;
+
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 uvs;
 layout(location = 2) in vec3 normal;
 
 uniform mat4 model, view, projection;
+uniform vec3 light_position[NUM_LIGHT_SRC];
 
 // position and normal for the fragment shader, in WORLD coordinates
 // (you can also compute in VIEW coordinates, your choice! rename variables)
 out vec3 w_position, w_normal;   // in world coordinates
 out vec2 frag_uv;
 out float visibility;
-out vec3 to_light_vector;
+out vec3 to_light_vector[NUM_LIGHT_SRC];
 out vec3 surface_normal;
 
 const float density = 0.007;
 const float gradient = 1.5;
-vec3 light_position = vec3(0, 0, 0);
+//vec3 light_position = vec3(0, 0, 0);
 
 void main() {
 
@@ -33,10 +36,14 @@ void main() {
     // fragment normal in world coordinates
     mat3 nit_matrix = transpose(inverse(mat3(model)));
     w_normal = normalize(nit_matrix * normal);
-
     // w_normal = (model * vec4(normal, 0)).xyz;
+
     surface_normal = (model * vec4(normal, 0.0)).xyz;
-    to_light_vector = light_position - worldPosition.xyz;
+    for(int i = 0;i < NUM_LIGHT_SRC; i++)
+    {
+        to_light_vector[i] = light_position[i] - worldPosition.xyz;
+    }
+    //to_light_vector = light_position - worldPosition.xyz;
 
     float distance = length(positionRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));

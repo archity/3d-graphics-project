@@ -112,11 +112,19 @@ class TexturedPhongMesh:
         GL.glUseProgram(self.shader.glid)
 
         # projection geometry
-        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's', 'fog_colour']
+        names = ['view', 'projection', 'model',
+                 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's',
+                 'fog_colour']
         loc = {n: GL.glGetUniformLocation(self.shader.glid, n) for n in names}
 
-        # model3x3 = model[0:3, 0:3]
-        # nit_matrix = np.linalg.inv(model3x3).T
+        # atten_array = self.fog_colour.get_atten()
+        # Iterate over all the light sources and send (to shader) their properties.
+        for i in range(0, self.fog_colour.num_light_src):
+            light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
+            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+
+            atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
+            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
 
         GL.glUniformMatrix4fv(loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(loc['projection'], 1, True, projection)
@@ -127,7 +135,6 @@ class TexturedPhongMesh:
         GL.glUniform3fv(loc['k_s'], 1, self.k_s)
         GL.glUniform1f(loc['s'], max(self.s, 0.001))
         GL.glUniform3fv(loc['fog_colour'], 1, self.fog_colour.get_colour())
-        # GL.glUniformMatrix4fv(loc['nit_matrix'], 1, True, nit_matrix)
 
         # ----------------
         # texture access setups

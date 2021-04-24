@@ -1,5 +1,7 @@
 #version 330 core
 
+const int NUM_LIGHT_SRC = 3;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -16,13 +18,13 @@ out vec2 frag_tex_coords;
 const float density = 0.010;
 const float gradient = 1.0;
 out float visibility;
-out vec3 to_light_vector;
+out vec3 to_light_vector[NUM_LIGHT_SRC];
 
 // Lighting effects variables (Unused)
 //out vec3 surfaceNormal;
 //out vec3 toLightVector;
 //out vec3 toCameraVector;
-vec3 light_position = vec3(0, 0, 0);
+uniform vec3 light_position[NUM_LIGHT_SRC];
 
 void main() {
 
@@ -38,7 +40,10 @@ void main() {
 //    toLightVector = lightPosition - worldPosition.xyz;
 //    toCameraVector = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 
-    to_light_vector = light_position - worldPosition.xyz;
+    for(int i = 0;i < NUM_LIGHT_SRC; i++)
+    {
+        to_light_vector[i] = light_position[i] - worldPosition.xyz;
+    }
 
     float distance = length(positionRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));

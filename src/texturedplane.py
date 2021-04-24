@@ -134,6 +134,16 @@ class TexturedPlane(Mesh):
         GL.glUniform1i(self.loc1['blendmap'], 3)
         GL.glUniform3fv(self.loc1['fog_colour'], 1, self.fog_colour.get_colour())
 
+        # print(self.fog_colour.get_atten()[0])
+        # atten_var = self.fog_colour.get_atten()
+        for i in range(0, self.fog_colour.num_light_src):
+            light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
+            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+
+            atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
+            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
+
+
     def bind_textures(self):
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.background_texture.glid)

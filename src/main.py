@@ -633,7 +633,7 @@ def add_animations(viewer, shader):
 def main():
     """ create a window, add scene objects, then run rendering loop """
 
-    viewer = Viewer(width=1920, height=1080)
+    viewer = Viewer(width=1280, height=720)
     terrain_shader = Shader("shaders/terrain.vert", "shaders/terrain.frag")
     cube_shader = Shader("shaders/texture.vert", "shaders/texture.frag")
     phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
