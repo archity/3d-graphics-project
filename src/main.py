@@ -17,6 +17,7 @@ from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnim
 from skybox import Skybox
 from transform import quaternion, rotate, translate, scale, vec
+# from normal_mapping import load_textured_phong_mesh_normal_mapped
 import simpleaudio as sa
 
 
@@ -118,10 +119,10 @@ def build_houses(viewer, shader):
         transform=translate(115, 5, 48) @ scale(0.25, 0.25, 0.25) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 180))
     mesh_list = multi_load_textured("./../resources/house/mill/mill.FBX", shader=shader,
                                          tex_file=mill_tex,
-                                         k_a=(.5, .5, .5),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
+                                        k_a=(.5, .5, .5),
+                                        k_d=(1.2, 1.2, 1.2),
+                                        k_s=(.2, .2, .2),
+                                        s=4
                                          )
     for mesh in mesh_list:
         house_node.add(mesh)
@@ -632,15 +633,16 @@ def add_animations(viewer, shader):
 def main():
     """ create a window, add scene objects, then run rendering loop """
 
-    viewer = Viewer(width=1280, height=720)
+    viewer = Viewer(width=1920, height=1080)
     terrain_shader = Shader("shaders/terrain.vert", "shaders/terrain.frag")
     cube_shader = Shader("shaders/texture.vert", "shaders/texture.frag")
     phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
     lambertian_shader = Shader("shaders/lambertian.vert", "shaders/lambertian.frag")
     skinning_shader = Shader("shaders/skinning.vert", "shaders/skinning.frag")
+    normal_shader = Shader("shaders/normal_shader.vert", "shaders/normal_shader.frag")
 
     build_terrain(viewer, shader=terrain_shader)
-    build_tree(viewer, shader=lambertian_shader)
+    build_tree(viewer, shader=phong_shader)
     build_graveyard(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
     build_castle(viewer, shader=phong_shader)
@@ -655,7 +657,7 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/rome_caesar3.wav")
     # wave_obj.play()
 
     # start rendering loop

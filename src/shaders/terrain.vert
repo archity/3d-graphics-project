@@ -16,12 +16,13 @@ out vec2 frag_tex_coords;
 const float density = 0.010;
 const float gradient = 1.0;
 out float visibility;
+out vec3 to_light_vector;
 
 // Lighting effects variables (Unused)
 //out vec3 surfaceNormal;
 //out vec3 toLightVector;
 //out vec3 toCameraVector;
-
+vec3 light_position = vec3(0, 0, 0);
 
 void main() {
 
@@ -36,6 +37,8 @@ void main() {
 //    surfaceNormal = (model * vec4(normals, 0.0)).xyz;
 //    toLightVector = lightPosition - worldPosition.xyz;
 //    toCameraVector = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+
+    to_light_vector = light_position - worldPosition.xyz;
 
     float distance = length(positionRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));

@@ -5,19 +5,18 @@ layout(location = 1) in vec2 uvs;
 layout(location = 2) in vec3 normal;
 
 uniform mat4 model, view, projection;
-//uniform mat3 nit_matrix;
 
 // position and normal for the fragment shader, in WORLD coordinates
 // (you can also compute in VIEW coordinates, your choice! rename variables)
 out vec3 w_position, w_normal;   // in world coordinates
 out vec2 frag_uv;
-
+out float visibility;
+out vec3 to_light_vector;
+out vec3 surface_normal;
 
 const float density = 0.007;
 const float gradient = 1.5;
-
-out float visibility;
-
+vec3 light_position = vec3(0, 0, 0);
 
 void main() {
 
@@ -36,7 +35,8 @@ void main() {
     w_normal = normalize(nit_matrix * normal);
 
     // w_normal = (model * vec4(normal, 0)).xyz;
-
+    surface_normal = (model * vec4(normal, 0.0)).xyz;
+    to_light_vector = light_position - worldPosition.xyz;
 
     float distance = length(positionRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));
