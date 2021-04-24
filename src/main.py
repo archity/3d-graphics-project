@@ -14,7 +14,7 @@ from node import Node
 from texturedplane import TexturedPlane
 from core import multi_load_textured, load_textured_phong_mesh, load_textured_phong_mesh_skinned, load_phong_mesh
 from keyframe import KeyFrameControlNode
-from procedural_anime import ProceduralAnim
+from procedural_anime import ProceduralAnimation
 from skybox import Skybox
 from transform import quaternion, rotate, translate, scale, vec
 # from normal_mapping import load_textured_phong_mesh_normal_mapped
@@ -552,27 +552,27 @@ def build_church(viewer, shader):
 
 def add_characters(viewer, shader):
     # Archer
-    # keyframe_archer_node = KeyFrameControlNode(
-    #     translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
-    #     rotate_keys={0: quaternion(), 1: quaternion()},
-    #     scale_keys={0: 1, 1: 1},
-    #     loop=True
-    # )
-    # size = 0.015
-    # archer_node = Node(
-    #     transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
-    # mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
-    #                                              tex_file="./../resources/archer/archer.tga",
-    #                                              k_a=(1, 1, 1),
-    #                                              k_d=(.6, .6, .6),
-    #                                              k_s=(.1, .1, .1),
-    #                                              s=4, delay=0.5
-    #                                              )
-    #
-    # for mesh in mesh_list:
-    #     archer_node.add(mesh)
-    # keyframe_archer_node.add(archer_node)
-    # viewer.add(keyframe_archer_node)
+    keyframe_archer_node = KeyFrameControlNode(
+        translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
+        rotate_keys={0: quaternion(), 1: quaternion()},
+        scale_keys={0: 1, 1: 1},
+        loop=True
+    )
+    size = 0.015
+    archer_node = Node(
+        transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
+                                                 tex_file="./../resources/archer/archer.tga",
+                                                 k_a=(1, 1, 1),
+                                                 k_d=(.6, .6, .6),
+                                                 k_s=(.1, .1, .1),
+                                                 s=4, delay=0.5
+                                                 )
+
+    for mesh in mesh_list:
+        archer_node.add(mesh)
+    keyframe_archer_node.add(archer_node)
+    viewer.add(keyframe_archer_node)
 
 
     # Farmer
@@ -617,7 +617,7 @@ def add_animations(viewer, shader):
     viewer.add(cannon_ball_node)
 
     # Bird
-    bird_node = ProceduralAnim(circular_motion)
+    bird_node = ProceduralAnimation(circular_motion)
     mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=shader,
                                          tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
