@@ -1,0 +1,150 @@
+# 
+# Wavefront material file
+# Converted by the DEEP Exploration  Deep Exploration 6.5 6.5.0.9181
+# Right Hemisphere, LTD
+# http://www.righthemisphere.com/
+# 
+
+newmtl skin_skin_png01
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 84.4485
+map_Kd skin.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body01
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 51.9842
+map_Kd body.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl skin01
+Ka 0.76 0.76 0.76
+Kd 0.76 0.76 0.76
+Ks 1 1 1
+illum 2
+Ns 354.52
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl eye_01
+Ka 0.8 0.8 0.8
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 51.9842
+map_Kd eye.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl hair01
+Ka 0.254902 0.254902 0.254902
+Kd 0.254902 0.254902 0.254902
+Ks 1 1 1
+illum 2
+Ns 90.5097
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl black01
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+illum 2
+Ns 354.52
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl face01
+Ka 0.65098 0.65098 0.65098
+Kd 1 1 1
+Ks 0.74902 0.74902 0.74902
+illum 2
+Ns 27.8576
+map_Kd face.png
+map_bump 
+bump 
+map_opacity face.png
+map_d face.png
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl skirt_shoe01
+Ka 0.76 0.76 0.76
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 84.4485
+map_Kd body.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl sock01
+Ka 0.76 0.76 0.76
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 354.52
+map_Kd sock.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
