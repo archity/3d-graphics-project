@@ -29,7 +29,7 @@ class Camera:
         self.sensitivity = 0.03
         # self.update_camera_vectors()
 
-        self.hmap_file = "./../resources/hmap_2_mounds_4096px.png"
+        self.hmap_file = "./../resources/map/hmap_2_mounds_4096px.png"
         self.hmap_tex = np.asarray(Image.open(self.hmap_file).convert('RGB'))
 
     def process_keyboard_input(self, window, delta_time):
