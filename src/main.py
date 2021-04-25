@@ -176,22 +176,6 @@ def build_houses(viewer, shader):
     viewer.add(house_node)
     # viewer.add(farm_node)
 
-    # Street Lamp
-    streetlamp_node = Node(
-        transform=translate(-12, -1, 60) @ scale(2, 2, 2))
-    mesh_list = load_textured_phong_mesh(file="./../resources/streetlight/Street_Light_Torch.obj", shader=shader,
-                                         tex_file="./../resources/streetlight/texture.png",
-                                         k_a=(.5, .5, .5),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-    for mesh in mesh_list:
-        streetlamp_node.add(mesh)
-    viewer.add(streetlamp_node)
-
-
-
 
 def build_graveyard(viewer, shader):
     # Rocks
@@ -465,22 +449,6 @@ def build_graveyard(viewer, shader):
     for mesh in mesh_list:
         gravegrass_node.add(mesh)
     viewer.add(gravegrass_node)
-
-    # Grave Light
-    gravelight_node = Node(
-        transform=translate(-60, 0, -30) @ scale(1, 1, 1))
-    mesh_list = load_textured_phong_mesh(file="./../resources/streetlight/graveyard_light.obj",
-                                         shader=shader,
-                                         tex_file="./../resources/Cannon_3/Textures/body_wood.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-
-    for mesh in mesh_list:
-        gravelight_node.add(mesh)
-    viewer.add(gravelight_node)
 
 
 def circular_motion():
@@ -787,8 +755,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
-    wave_obj.play()
+    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    # wave_obj.play()
 
     # start rendering loop
     viewer.run()
