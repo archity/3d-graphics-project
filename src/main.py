@@ -176,6 +176,22 @@ def build_houses(viewer, shader):
     viewer.add(house_node)
     # viewer.add(farm_node)
 
+    # Street Lamp
+    streetlamp_node = Node(
+        transform=translate(-12, -1, 60) @ scale(2, 2, 2))
+    mesh_list = load_textured_phong_mesh(file="./../resources/streetlight/Street_Light_Torch.obj", shader=shader,
+                                         tex_file="./../resources/streetlight/texture.png",
+                                         k_a=(.5, .5, .5),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        streetlamp_node.add(mesh)
+    viewer.add(streetlamp_node)
+
+
+
 
 def build_graveyard(viewer, shader):
     # Rocks
@@ -220,9 +236,93 @@ def build_graveyard(viewer, shader):
         graveyard_cross1_node.add(mesh)
     viewer.add(graveyard_cross1_node)
 
+    # Graveyard Cross 1.1
+    graveyard_cross1_node = Node(
+        transform=translate(-70, -1, -15) @ scale(0.15, 0.15, 0.15) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave3.fbx", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross1_node.add(mesh)
+    viewer.add(graveyard_cross1_node)
+
+    # Graveyard Cross 1.2
+    graveyard_cross1_node = Node(
+        transform=translate(-45, -1, 0) @ scale(0.15, 0.15, 0.15) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave3.fbx", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross1_node.add(mesh)
+    viewer.add(graveyard_cross1_node)
+
+    # Graveyard Cross 1.3
+    graveyard_cross1_node = Node(
+        transform=translate(-40, -1, -20) @ scale(0.15, 0.15, 0.15) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave3.fbx", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross1_node.add(mesh)
+    viewer.add(graveyard_cross1_node)
+
     # Graveyard Cross 2
     graveyard_cross2_node = Node(
-        transform=translate(-50, -1, -10) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+        transform=translate(-50, -1, -25) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross2_node.add(mesh)
+    viewer.add(graveyard_cross2_node)
+
+    # Graveyard Cross 2.1
+    graveyard_cross2_node = Node(
+        transform=translate(-65, -1, -3) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross2_node.add(mesh)
+    viewer.add(graveyard_cross2_node)
+
+    # Graveyard Cross 2.2
+    graveyard_cross2_node = Node(
+        transform=translate(-45, -1, -25) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
+                                         tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+    for mesh in mesh_list:
+        graveyard_cross2_node.add(mesh)
+    viewer.add(graveyard_cross2_node)
+
+    # Graveyard Cross 2.3
+    graveyard_cross2_node = Node(
+        transform=translate(-55, -1, -15) @ scale(0.2, 0.2, 0.2) @ rotate((0, 1, 0), -90))
     mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/grave4.obj", shader=shader,
                                          tex_file="./../resources/graveyard/pattern/Material_roughness.jpg",
                                          k_a=(.4, .4, .4),
@@ -365,6 +465,22 @@ def build_graveyard(viewer, shader):
     for mesh in mesh_list:
         gravegrass_node.add(mesh)
     viewer.add(gravegrass_node)
+
+    # Grave Light
+    gravelight_node = Node(
+        transform=translate(-60, 0, -30) @ scale(1, 1, 1))
+    mesh_list = load_textured_phong_mesh(file="./../resources/streetlight/graveyard_light.obj",
+                                         shader=shader,
+                                         tex_file="./../resources/Cannon_3/Textures/body_wood.jpg",
+                                         k_a=(.4, .4, .4),
+                                         k_d=(1.2, 1.2, 1.2),
+                                         k_s=(.2, .2, .2),
+                                         s=4
+                                         )
+
+    for mesh in mesh_list:
+        gravelight_node.add(mesh)
+    viewer.add(gravelight_node)
 
 
 def circular_motion():
