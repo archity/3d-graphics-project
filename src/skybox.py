@@ -72,8 +72,8 @@ class Skybox:
         self.time = 0
         self.fog_colour = FogColour()
 
-        day_skybox = "./../resources/skybox2/"
-        night_skybox = "./../resources/skybox3/"
+        day_skybox = "./../resources/skybox/skybox2/"
+        night_skybox = "./../resources/skybox/skybox3/"
 
         self.day_skybox_texture = self.load_cubemap(texture_file=day_skybox, tex_num=GL.GL_TEXTURE0)
         self.night_skybox_texture = self.load_cubemap(texture_file=night_skybox, tex_num=GL.GL_TEXTURE1)

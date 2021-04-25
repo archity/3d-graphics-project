@@ -1,6 +1,6 @@
 #version 330 core
 
-const int NUM_LIGHT_SRC = 3;
+const int NUM_LIGHT_SRC = 4;
 
 uniform sampler2D diffuse_map;
 in vec2 frag_uv;
@@ -25,7 +25,7 @@ in vec3 surface_normal;
 in float visibility;
 uniform vec3 skyColor;
 in vec3 to_light_vector[NUM_LIGHT_SRC];
-uniform vec3 atten_factor[3];
+uniform vec3 atten_factor[NUM_LIGHT_SRC];
 
 void main() {
 

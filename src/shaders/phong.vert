@@ -1,6 +1,6 @@
 #version 330 core
 
-const int NUM_LIGHT_SRC = 3;
+const int NUM_LIGHT_SRC = 4;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 uvs;

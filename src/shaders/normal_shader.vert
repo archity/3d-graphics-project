@@ -1,44 +1,55 @@
 #version 330 core
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec2 uvs;
-layout(location = 2) in vec3 normal;
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec3 vertexNormal_modelspace;
+layout(location = 3) in vec3 vertexTangent_modelspace;
+layout(location = 4) in vec3 vertexBitangent_modelspace;
 
-uniform mat4 model, view, projection;
-//uniform mat3 nit_matrix;
-
-// position and normal for the fragment shader, in WORLD coordinates
-// (you can also compute in VIEW coordinates, your choice! rename variables)
-out vec3 w_position, w_normal;   // in world coordinates
-out vec2 frag_uv;
-
-
-const float density = 0.007;
-const float gradient = 1.5;
-
+// Output data
+out vec2 pass_textureCoordinates;
+//out vec3 toLightVector[4];
+out vec3 toCameraVector;
 out float visibility;
 
 
-void main() {
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform mat4 V;
+uniform mat4 M;
+uniform mat4 P;
+uniform mat3 MV3x3;
+uniform vec3 LightPosition_worldspace;
 
-    vec4 worldPosition = model * vec4(position, 1.0);
-    vec4 positionRelativeToCam = view * worldPosition;
+const float density = 0;
+const float gradient = 5.0;
 
-    //vec4 w_position4 = model * vec4(position, 1.0);
-    gl_Position = projection * positionRelativeToCam;
-    frag_uv = vec2(uvs.x, uvs.y);
+void main(){
 
-    // compute the vertex position and normal in world or view coordinates
-    w_position =  worldPosition.xyz / worldPosition.w;
+	vec4 worldPosition =  P * vec4(vertexPosition_modelspace, 1);
+	mat4 modelViewMatrix = V * M;
+	vec4 positionRelativeToCam = modelViewMatrix * vec4(vertexPosition_modelspace,1.0);
+	gl_Position = P * positionRelativeToCam;
 
-    // fragment normal in world coordinates
-    mat3 nit_matrix = transpose(inverse(mat3(model)));
-    w_normal = normalize(nit_matrix * normal);
+	pass_textureCoordinates = vertexUV;
 
-    // w_normal = (model * vec4(normal, 0)).xyz;
+	vec3 surfaceNormal = (modelViewMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
 
+	vec3 norm = normalize(surfaceNormal);
+	vec3 tang = normalize((modelViewMatrix * vec4(vertexTangent_modelspace, 0.0)).xyz);
+	vec3 bitang = normalize(cross(norm, tang));
 
-    float distance = length(positionRelativeToCam.xyz);
-    visibility = exp(-pow((distance * density), gradient));
-    visibility = clamp(visibility, 0.0, 1.0);
+	mat3 toTangentSpace = mat3(
+		tang.x, bitang.x, norm.x,
+		tang.y, bitang.y, norm.y,
+		tang.z, bitang.z, norm.z
+	);
+
+	toCameraVector = toTangentSpace * (-positionRelativeToCam.xyz);
+	float distance = length(positionRelativeToCam.xyz);
+	visibility = exp(-pow((distance*density),gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+
 }
+

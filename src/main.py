@@ -181,8 +181,8 @@ def build_graveyard(viewer, shader):
     # Rocks
     rock_node = Node(
         transform=translate(20, -1, -15) @ scale(0.1, 0.1, 0.1) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 270))
-    mesh_list = load_textured_phong_mesh(file="./../resources/rock/rock_02.FBX", shader=shader,
-                                         tex_file="./../resources/rock/mountain_rock.jpg",
+    mesh_list = load_textured_phong_mesh(file="./../resources/nature/rock/rock_02.FBX", shader=shader,
+                                         tex_file="./../resources/nature/rock/mountain_rock.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
@@ -237,8 +237,8 @@ def build_graveyard(viewer, shader):
     # Angel of Death
     angelofdeath_node = Node(
         transform=translate(-90, -1, -10) @ scale(0.06, 0.06, 0.06) @ rotate((0, 1, 0), 90))
-    mesh_list = load_textured_phong_mesh(file="./../resources/Angel/Angelofdeath/angelofdeath.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_3/Textures/metal.jpg",
+    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/Angel/Angelofdeath/angelofdeath_dec_reduced.obj", shader=shader,
+                                         tex_file="./../resources/cannon/Cannon_3/Textures/metal.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
@@ -382,13 +382,13 @@ def circular_motion():
 
 def build_tree(viewer, shader):
     # Pathway trees
-    tex_list = ["./../resources/tree/CommonTree/bark_decidious.jpg",
-                "./../resources/tree/CommonTree/leaves_256px.jpg"]
+    tex_list = ["./../resources/nature/tree/CommonTree/bark_decidious.jpg",
+                "./../resources/nature/tree/CommonTree/leaves_256px.jpg"]
     tree_size = 4.0
     for i in range(-70, 100, 40):
         tree_node = Node(
             transform=translate(10, -1, i) @ scale(tree_size, tree_size, tree_size) @ rotate((1, 0, 0), -90))
-        mesh_list = multi_load_textured(file="./../resources/tree/CommonTree/CommonTree_1.fbx", shader=shader,
+        mesh_list = multi_load_textured(file="./../resources/nature/tree/CommonTree/CommonTree_1.fbx", shader=shader,
                                         tex_file=tex_list,
                                         k_a=(.4, .4, .4),
                                         k_d=(1.2, 1.2, 1.2),
@@ -401,7 +401,7 @@ def build_tree(viewer, shader):
 
         tree_node = Node(
             transform=translate(-10, -1, i) @ scale(tree_size, tree_size, tree_size) @ rotate((1, 0, 0), -90))
-        mesh_list = multi_load_textured(file="./../resources/tree/CommonTree/CommonTree_1.fbx", shader=shader,
+        mesh_list = multi_load_textured(file="./../resources/nature/tree/CommonTree/CommonTree_1.fbx", shader=shader,
                                         tex_file=tex_list,
                                         k_a=(.4, .4, .4),
                                         k_d=(1.2, 1.2, 1.2),
@@ -411,36 +411,6 @@ def build_tree(viewer, shader):
         for mesh in mesh_list:
             tree_node.add(mesh)
         viewer.add(tree_node)
-
-    # Forest trees between castle and graveyard
-    # tree_size = 3
-    # birch_tree_list = ["./../resources/tree/BirchTree/BirchTree_1.fbx",
-    #                    "./../resources/tree/BirchTree/BirchTree_2.fbx",
-    #                    "./../resources/tree/BirchTree/BirchTree_3.fbx",
-    #                    "./../resources/tree/BirchTree/BirchTree_4.fbx",
-    #                    "./../resources/tree/BirchTree/BirchTree_5.fbx"]
-    #
-    # birch_tex_list = ["./../resources/tree/CommonTree/bark_decidious.jpg",
-    #                   "./../resources/tree/CommonTree/leaves_256px.jpg",
-    #                   "./../resources/tree/CommonTree/leaves_256px.jpg",
-    #                   "./../resources/tree/CommonTree/leaves_256px.jpg"]
-    #
-    # for z in range(80, 100, 8):
-    #     for x in range(-30, -50, -8):
-    #         n = random.randint(0, 4)
-    #         tree_node = Node(
-    #             transform=translate(x, -1, z) @ scale(tree_size, tree_size, tree_size) @ rotate((1, 0, 0), -90))
-    #         mesh_list = multi_load_textured(file=birch_tree_list[n], shader=shader, tex_file=birch_tex_list,
-    #                                         k_a=(.4, .4, .4),
-    #                                         k_d=(1.2, 1.2, 1.2),
-    #                                         k_s=(.2, .2, .2),
-    #                                         s=4
-    #                                         )
-    #
-    #         for mesh in mesh_list:
-    #             tree_node.add(mesh)
-    #         viewer.add(tree_node)
-
 
 
 def build_castle(viewer, shader):
@@ -466,8 +436,8 @@ def build_castle(viewer, shader):
     for x_pos in [29.4, 17.9, 6.7, -4.5, -15.6, -27]:
         cannon_3_node = Node(
             transform=translate(x_pos, 16, 158) @ scale(.03, .03, .03) @ rotate((0, 1, 0), 180))
-        mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/low-poly-cannon.fbx", shader=shader,
-                                             tex_file="./../resources/Cannon_3/Textures/plate.jpg",
+        mesh_list = load_textured_phong_mesh(file="./../resources/cannon/Cannon_3/low-poly-cannon.fbx", shader=shader,
+                                             tex_file="./../resources/cannon/Cannon_3/Textures/plate.jpg",
                                              k_a=(.5, .5, .5),
                                              k_d=(1, 1, 1),
                                              k_s=(.1, .1, .1),
@@ -479,17 +449,17 @@ def build_castle(viewer, shader):
         viewer.add(cannon_3_node)
 
     # Ground cannon (Cannon_3)
-    tex_list2 = ["./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/gun.jpg",
-                 "./../resources/Cannon_3/Textures/metal.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg",
-                 "./../resources/Cannon_3/Textures/body_wood.jpg"
+    tex_list2 = ["./../resources/cannon/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/cannon/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/cannon/Cannon_3/Textures/gun.jpg",
+                 "./../resources/cannon/Cannon_3/Textures/metal.jpg",
+                 "./../resources/cannon/Cannon_3/Textures/body_wood.jpg",
+                 "./../resources/cannon/Cannon_3/Textures/body_wood.jpg"
                  ]
     for x_pos in [30, 15, -15, -30]:
         cannon_3_node = Node(
             transform=translate(x_pos, -1, 145) @ scale(3, 3, 3) @ rotate((0, 1, 0), 90))
-        mesh_list = multi_load_textured(file="./../resources/Cannon_3/cannon_3.obj", shader=shader,
+        mesh_list = multi_load_textured(file="./../resources/cannon/Cannon_3/cannon_3.obj", shader=shader,
                                         tex_file=tex_list2,
                                         k_a=(.5, .5, .5),
                                         k_d=(1, 1, 1),
@@ -505,8 +475,8 @@ def build_castle(viewer, shader):
     for x_pos in [46, -45]:
         cannon_1_node = Node(
             transform=translate(x_pos, 17, 151) @ scale(1, 1, 1) @ rotate((0, 1, 0), 180))
-        mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_1/cannon_2.obj", shader=shader,
-                                             tex_file="./../resources/Cannon_1/cannon_1_texture.jpg",
+        mesh_list = load_textured_phong_mesh(file="./../resources/cannon/Cannon_1/cannon_2.obj", shader=shader,
+                                             tex_file="./../resources/cannon/Cannon_1/cannon_1_texture.jpg",
                                              k_a=(.4, .4, .4),
                                              k_d=(1.2, 1.2, 1.2),
                                              k_s=(.2, .2, .2),
@@ -520,15 +490,15 @@ def build_castle(viewer, shader):
 def build_terrain(viewer, shader):
     # Grass and pavement
 
-    background_texture_file = "./../resources/grass.png"
-    road_texture_file = "./../resources/pavement-texture.jpg"
-    road2_texture_file = "./../resources/fertile-loam-soil.jpg"
-    blendmap_file = "./../resources/blend_map_t_point_local_road.png"
+    background_texture_file = "./../resources/textures/grass.png"
+    road_texture_file = "./../resources/textures/pavement-texture.jpg"
+    road2_texture_file = "./../resources/textures/fertile-loam-soil.jpg"
+    blendmap_file = "./../resources/map/blend_map_t_point_local_road.png"
 
     grass_node = Node(transform=translate(-500, -1, -500) @ rotate((1, 0, 0), 0))
     plane = TexturedPlane(background_texture_file, road_texture_file, road2_texture_file,
                           blendmap_file, shader, size=1000,
-                          hmap_file="./../resources/hmap_2_mounds_256px.png")
+                          hmap_file="./../resources/map/hmap_2_mounds_256px.png")
     grass_node.add(plane)
     viewer.add(grass_node)
 
@@ -552,41 +522,41 @@ def build_church(viewer, shader):
 
 def add_characters(viewer, shader):
     # Archer
-    keyframe_archer_node = KeyFrameControlNode(
-        translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
-        rotate_keys={0: quaternion(), 1: quaternion()},
-        scale_keys={0: 1, 1: 1},
-        loop=True
-    )
-    size = 0.015
-    archer_node = Node(
-        transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
-    mesh_list = load_textured_phong_mesh_skinned("./../resources/archer/archer_standing.FBX", shader=shader,
-                                                 tex_file="./../resources/archer/archer.tga",
-                                                 k_a=(1, 1, 1),
-                                                 k_d=(.6, .6, .6),
-                                                 k_s=(.1, .1, .1),
-                                                 s=4, delay=0.5
-                                                 )
-
-    for mesh in mesh_list:
-        archer_node.add(mesh)
-    keyframe_archer_node.add(archer_node)
-    viewer.add(keyframe_archer_node)
+    # keyframe_archer_node = KeyFrameControlNode(
+    #     translate_keys={0: vec(0, 0, 0), 1: vec(0, 0, 0)},
+    #     rotate_keys={0: quaternion(), 1: quaternion()},
+    #     scale_keys={0: 1, 1: 1},
+    #     loop=True
+    # )
+    # size = 0.015
+    # archer_node = Node(
+    #     transform=translate(35, 0, 0) @ scale(size, size, size) @ rotate((0, 1, 0), -90))
+    # mesh_list = load_textured_phong_mesh_skinned("./../resources/characters/archer/archer_standing.FBX", shader=shader,
+    #                                              tex_file="./../resources/characters/archer/archer.tga",
+    #                                              k_a=(1, 1, 1),
+    #                                              k_d=(.6, .6, .6),
+    #                                              k_s=(.1, .1, .1),
+    #                                              s=4, delay=0.5
+    #                                              )
+    #
+    # for mesh in mesh_list:
+    #     archer_node.add(mesh)
+    # keyframe_archer_node.add(archer_node)
+    # viewer.add(keyframe_archer_node)
 
 
     # Farmer
-    keyframe_archer_node = KeyFrameControlNode(
+    keyframe_farmer_node = KeyFrameControlNode(
         translate_keys={30: vec(100, -1, -5), 0: vec(0, -1, -5)},
         rotate_keys={0: quaternion(), 30: quaternion()},
         scale_keys={0: 1, 30: 1},
         loop=True
     )
     size = 0.05
-    archer_node = Node(
+    farmer_node = Node(
         transform=translate(0, 0, 0) @ scale(size, size, size) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), -90))
-    mesh_list = load_textured_phong_mesh_skinned("./../resources/farmer/farmer.FBX", shader=shader,
-                                                 tex_file="./../resources/farmer/texture_01.jpg",
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/characters/farmer/farmer.FBX", shader=shader,
+                                                 tex_file="./../resources/characters/farmer/texture_01.jpg",
                                                  k_a=(1, 1, 1),
                                                  k_d=(.6, .6, .6),
                                                  k_s=(.1, .1, .1),
@@ -594,9 +564,9 @@ def add_characters(viewer, shader):
                                                  )
 
     for mesh in mesh_list:
-        archer_node.add(mesh)
-    keyframe_archer_node.add(archer_node)
-    viewer.add(keyframe_archer_node)
+        farmer_node.add(mesh)
+    keyframe_farmer_node.add(farmer_node)
+    viewer.add(keyframe_farmer_node)
 
 
 def add_animations(viewer, shader):
@@ -605,8 +575,8 @@ def add_animations(viewer, shader):
     rotate_keys = {0: quaternion(), 4: quaternion()}
     scale_keys = {0: 2, 4: 2}
     cannon_ball_node = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Cannon_3/cannon_ball.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
+    mesh_list = load_textured_phong_mesh(file="./../resources/cannon/Cannon_3/cannon_ball.obj", shader=shader,
+                                         tex_file="./../resources/cannon/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
@@ -618,8 +588,8 @@ def add_animations(viewer, shader):
 
     # Bird
     bird_node = ProceduralAnimation(circular_motion)
-    mesh_list = load_textured_phong_mesh(file="./../resources/Bird/Bird_2/Bird_2.obj", shader=shader,
-                                         tex_file="./../resources/Cannon_3/Textures/cannon.jpg",
+    mesh_list = load_textured_phong_mesh(file="./../resources/bird/Bird_2/Bird_2.obj", shader=shader,
+                                         tex_file="./../resources/cannon/Cannon_3/Textures/cannon.jpg",
                                          k_a=(.4, .4, .4),
                                          k_d=(1.2, 1.2, 1.2),
                                          k_s=(.2, .2, .2),
@@ -628,6 +598,50 @@ def add_animations(viewer, shader):
     for mesh in mesh_list:
         bird_node.add(mesh)
     viewer.add(bird_node)
+
+
+def add_lamps(viewer, shader):
+    # Lamp 1
+    lamp_node = Node(
+        transform=translate(10, -1, -10) @ scale(0.7, 0.7, 0.7))
+    lamp_mesh_list = load_textured_phong_mesh(file="./../resources/lamp/lamp_ThinMatrix.obj", shader=shader,
+                                                tex_file="./../resources/lamp/lamp_ThinMatrix.png",
+                                                k_a=(1, 1, 1),
+                                                k_d=(.6, .6, .6),
+                                                k_s=(.1, .1, .1),
+                                                s=4
+                                                )
+    for mesh in lamp_mesh_list:
+        lamp_node.add(mesh)
+    viewer.add(lamp_node)
+
+    # Lamp 2
+    lamp_node = Node(
+        transform=translate(15, -1, 55) @ scale(0.7, 0.7, 0.7))
+    lamp_mesh_list = load_textured_phong_mesh(file="./../resources/lamp/lamp_ThinMatrix.obj", shader=shader,
+                                              tex_file="./../resources/lamp/lamp_ThinMatrix.png",
+                                              k_a=(1, 1, 1),
+                                              k_d=(.6, .6, .6),
+                                              k_s=(.1, .1, .1),
+                                              s=4
+                                              )
+    for mesh in lamp_mesh_list:
+        lamp_node.add(mesh)
+    viewer.add(lamp_node)
+
+    # Graveyard lamp
+    lamp_node = Node(
+        transform=translate(-60, -1, -30) @ scale(0.7, 0.7, 0.7))
+    lamp_mesh_list = load_textured_phong_mesh(file="./../resources/lamp/lamp_ThinMatrix.obj", shader=shader,
+                                              tex_file="./../resources/lamp/lamp_ThinMatrix.png",
+                                              k_a=(1, 1, 1),
+                                              k_d=(.6, .6, .6),
+                                              k_s=(.1, .1, .1),
+                                              s=4
+                                              )
+    for mesh in lamp_mesh_list:
+        lamp_node.add(mesh)
+    viewer.add(lamp_node)
 
 
 def main():
@@ -639,7 +653,6 @@ def main():
     phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
     lambertian_shader = Shader("shaders/lambertian.vert", "shaders/lambertian.frag")
     skinning_shader = Shader("shaders/skinning.vert", "shaders/skinning.frag")
-    normal_shader = Shader("shaders/normal_shader.vert", "shaders/normal_shader.frag")
 
     build_terrain(viewer, shader=terrain_shader)
     build_tree(viewer, shader=phong_shader)
@@ -649,6 +662,7 @@ def main():
     build_church(viewer, shader=phong_shader)
     add_characters(viewer, shader=skinning_shader)
     add_animations(viewer, shader=phong_shader)
+    add_lamps(viewer, shader=phong_shader)
 
     # -------------------------------------------------
 
@@ -657,8 +671,8 @@ def main():
     viewer.add(Skybox(shader_skybox=shader_skybox))
 
     # Start playing ambient audio in background
-    # wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/rome_caesar3.wav")
-    # wave_obj.play()
+    wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/amb_we_2.wav")
+    wave_obj.play()
 
     # start rendering loop
     viewer.run()

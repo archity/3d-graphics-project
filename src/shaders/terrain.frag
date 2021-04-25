@@ -1,6 +1,6 @@
 #version 330 core
 
-const int NUM_LIGHT_SRC = 3;
+const int NUM_LIGHT_SRC = 4;
 
 uniform sampler2D diffuse_map;
 uniform sampler2D blue_texture;
@@ -15,7 +15,7 @@ out vec4 out_color;
 // Fog variable
 in float visibility;
 in vec3 to_light_vector[NUM_LIGHT_SRC];
-uniform vec3 atten_factor[3];
+uniform vec3 atten_factor[NUM_LIGHT_SRC];
 
 // Lighting effects variables (Unused)
 //in vec3 surfaceNormal;

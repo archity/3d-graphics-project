@@ -253,3 +253,7 @@ def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s, d
         # return meshes
 
     return [root_node]
+
+
+def load_textured_phong_mesh_normal_mapping():
+    x=0

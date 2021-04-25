@@ -1,6 +1,6 @@
 #version 330 core
 
-const int NUM_LIGHT_SRC = 3;
+const int NUM_LIGHT_SRC = 4;
 
 uniform mat4 model;
 uniform mat4 view;
