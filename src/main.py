@@ -12,17 +12,19 @@ from viewer import Viewer
 from shader import Shader
 from node import Node
 from texturedplane import TexturedPlane
-from core import multi_load_textured, load_textured_phong_mesh, load_textured_phong_mesh_skinned, load_phong_mesh
+from core import multi_load_textured, load_textured_phong_mesh, load_textured_phong_mesh_skinned
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnimation
 from skybox import Skybox
-from transform import quaternion, rotate, translate, scale, vec
-# from normal_mapping import load_textured_phong_mesh_normal_mapped
+from transform import quaternion, rotate, translate, scale, vec, quaternion_from_euler, quaternion_from_axis_angle
 import simpleaudio as sa
 
 
 def build_houses(viewer, shader):
 
+    # Hierarchical modelling for just the first house
+    # Hierarchy contains house, a tree and 3 bushes as a single entity
+    house_master_node = Node()
     # House - 1
     house_node = Node(
         transform=translate(28, -1, 30) @ scale(0.25, 0.25, 0.25) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), -180))
@@ -36,7 +38,44 @@ def build_houses(viewer, shader):
     for mesh in mesh_list:
         house_node.add(mesh)
 
-    viewer.add(house_node)
+    house_master_node.add(house_node)
+
+    bush_node = Node(transform=translate(14, -1, 0) @ scale(2.5, 2.5, 2.5))
+    for bush_pos in [7, 10, 13]:
+        bush = Node(
+            transform=translate(0, 0, bush_pos) @ scale(1, 1, 1) @ rotate((1, 0, 0), -90))
+        mesh_list = load_textured_phong_mesh("./../resources/nature/BushBerries_2.fbx", shader=shader,
+                                             tex_file="./../resources/nature/leaves_256px.jpg",
+                                             k_a=(.1, .5, .1),
+                                             k_d=(3, 3, 3),
+                                             k_s=(1, 1, 1),
+                                             s=4
+                                             )
+        for mesh in mesh_list:
+            bush.add(mesh)
+
+        bush_node.add(bush)
+
+    house_master_node.add(bush_node)
+
+    tex_list = ["./../resources/nature/tree/CommonTree/bark_decidious.jpg",
+                "./../resources/nature/tree/CommonTree/leaves_256px.jpg",
+                "./../resources/nature/tree/CommonTree/leaves_256px.jpg"]
+
+    tree_node = Node(
+        transform=translate(35, -1, 15) @ scale(3, 3, 3) @ rotate((1, 0, 0), -90))
+    mesh_list = multi_load_textured(file="./../resources/nature/tree/CommonTree/CommonTree_4.fbx", shader=shader,
+                                    tex_file=tex_list,
+                                    k_a=(.4, .4, .4),
+                                    k_d=(1.2, 1.2, 1.2),
+                                    k_s=(.2, .2, .2),
+                                    s=4
+                                    )
+    for mesh in mesh_list:
+        tree_node.add(mesh)
+
+    house_master_node.add(tree_node)
+    viewer.add(house_master_node)
 
     house_node = Node(
         transform=translate(65, -1, 32) @ scale(0.25, 0.25, 0.25) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
@@ -110,25 +149,6 @@ def build_houses(viewer, shader):
 
     viewer.add(house_node)
 
-
-
-    # Mill
-    mill_tex = ["./../resources/house/mill/mill_diffuse.jpg",
-                "./../resources/house/mill/mill_element.jpg"]
-    house_node = Node(
-        transform=translate(115, 5, 48) @ scale(0.25, 0.25, 0.25) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 180))
-    mesh_list = multi_load_textured("./../resources/house/mill/mill.FBX", shader=shader,
-                                         tex_file=mill_tex,
-                                        k_a=(.5, .5, .5),
-                                        k_d=(1.2, 1.2, 1.2),
-                                        k_s=(.2, .2, .2),
-                                        s=4
-                                         )
-    for mesh in mesh_list:
-        house_node.add(mesh)
-
-    viewer.add(house_node)
-
     # --------
     house_node = Node(
         transform=translate(28, -1, 80) @ scale(0.20, 0.20, 0.20) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), -90))
@@ -146,19 +166,6 @@ def build_houses(viewer, shader):
     # -----------------------------------------------------------------------------
     # Buildings near church
 
-    # Farm empty - 2
-    # farm_node = Node(
-    #     transform=translate(28, -1, -28) @ scale(0.5, 0.2, 0.5) @ rotate((1, 0, 0), -90))
-    # mesh_list = load_textured_phong_mesh(file="./../resources/farm/farm_empty.FBX", shader=shader,
-    #                                      tex_file="./../resources/farm/farm_empty.jpg",
-    #                                      k_a=(.7, .7, .7),
-    #                                      k_d=(.6, .6, .6),
-    #                                      k_s=(.1, .1, .1),
-    #                                      s=4
-    #                                      )
-    # for mesh in mesh_list:
-    #     farm_node.add(mesh)
-
     # House - 2
     house_node = Node(
         transform=translate(24, -1, -28) @ scale(0.25, 0.25, 0.25) @ rotate((1, 0, 0), -90))
@@ -172,9 +179,7 @@ def build_houses(viewer, shader):
     for mesh in mesh_list:
         house_node.add(mesh)
 
-    # Add the house on top of empty farm (hierarchically)
     viewer.add(house_node)
-    # viewer.add(farm_node)
 
 
 def build_graveyard(viewer, shader):
@@ -543,7 +548,7 @@ def build_castle(viewer, shader):
     for x_pos in [30, 15, -15, -30]:
         cannon_3_node = Node(
             transform=translate(x_pos, -1, 145) @ scale(3, 3, 3) @ rotate((0, 1, 0), 90))
-        mesh_list = multi_load_textured(file="./../resources/cannon/Cannon_3/cannon_3.obj", shader=shader,
+        mesh_list = multi_load_textured(file="./../resources/cannon/Cannon_3/cannon_3_reduced.obj", shader=shader,
                                         tex_file=tex_list2,
                                         k_a=(.5, .5, .5),
                                         k_d=(1, 1, 1),
@@ -631,9 +636,12 @@ def add_characters(viewer, shader):
 
     # Farmer
     keyframe_farmer_node = KeyFrameControlNode(
-        translate_keys={30: vec(100, -1, -5), 0: vec(0, -1, -5)},
-        rotate_keys={0: quaternion(), 30: quaternion()},
-        scale_keys={0: 1, 30: 1},
+        translate_keys={60: vec(0, -1, -5), 30: vec(100, -1, -5), 0: vec(0, -1, -5)},
+        rotate_keys={60: quaternion_from_axis_angle(axis=(0, 1, 0), degrees=180),
+                     30.001: quaternion_from_axis_angle(axis=(0, 1, 0), degrees=180),
+                     30: quaternion(),
+                     0: quaternion()},
+        scale_keys={60: 1, 0: 1},
         loop=True
     )
     size = 0.05
@@ -651,6 +659,32 @@ def add_characters(viewer, shader):
         farmer_node.add(mesh)
     keyframe_farmer_node.add(farmer_node)
     viewer.add(keyframe_farmer_node)
+
+    # Templar
+    keyframe_templar_node = KeyFrameControlNode(
+        translate_keys={60: vec(0, -1, 30), 30: vec(0, -1, -70), 0: vec(0, -1, 30)},
+        rotate_keys={60: quaternion_from_axis_angle(axis=(0, 1, 0), degrees=180),
+                     30.001: quaternion_from_axis_angle(axis=(0, 1, 0), degrees=180),
+                     30: quaternion(),
+                     0: quaternion()},
+        scale_keys={60: 1, 0: 1},
+        loop=True
+    )
+    size = 0.05
+    templar_node = Node(
+        transform=translate(0, 0, 0) @ scale(size, size, size) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
+    mesh_list = load_textured_phong_mesh_skinned("./../resources/characters/farmer/farmer.FBX", shader=shader,
+                                                 tex_file="./../resources/characters/farmer/cahracter_templar.jpg",
+                                                 k_a=(1, 1, 1),
+                                                 k_d=(.6, .6, .6),
+                                                 k_s=(.1, .1, .1),
+                                                 s=4, delay=1.0
+                                                 )
+
+    for mesh in mesh_list:
+        templar_node.add(mesh)
+    keyframe_templar_node.add(templar_node)
+    viewer.add(keyframe_templar_node)
 
 
 def add_animations(viewer, shader):
@@ -740,9 +774,9 @@ def main():
 
     build_terrain(viewer, shader=terrain_shader)
     build_tree(viewer, shader=phong_shader)
-    build_graveyard(viewer, shader=phong_shader)
+    # build_graveyard(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
-    build_castle(viewer, shader=phong_shader)
+    # build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
     add_characters(viewer, shader=skinning_shader)
     add_animations(viewer, shader=phong_shader)
