@@ -1,8 +1,10 @@
 #version 330 core
 
+const int NUM_LIGHT_SRC = 4;
 
 // ---- camera geometry
 uniform mat4 projection, view, model;
+uniform vec3 light_position[NUM_LIGHT_SRC];
 
 // ---- skinning globals and attributes
 const int MAX_VERTEX_BONES=4, MAX_BONES=128;
@@ -18,6 +20,7 @@ layout(location = 4) in vec4 bone_weights;
 // ----- interpolated attribute variables to be passed to fragment shader
 out vec3 fragment_color;
 out vec2 frag_uv;
+out vec3 to_light_vector[NUM_LIGHT_SRC];
 
 // position and normal for the fragment shader, in WORLD coordinates
 out vec3 w_position, w_normal;   // in world coordinates
@@ -48,6 +51,11 @@ void main() {
     // fragment normal in world coordinates
     mat3 nit_matrix = transpose(inverse(mat3(model)));
     w_normal = normalize(nit_matrix * normal);
+
+    for(int i = 0;i < NUM_LIGHT_SRC; i++)
+    {
+        to_light_vector[i] = light_position[i] - worldPosition.xyz;
+    }
 
     float distance = length(positionRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));

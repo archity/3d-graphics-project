@@ -21,7 +21,6 @@ import simpleaudio as sa
 
 
 def build_houses(viewer, shader):
-
     # Hierarchical modelling for just the first house
     # Hierarchy contains house, a tree and 3 bushes as a single entity
     house_master_node = Node()
@@ -104,7 +103,6 @@ def build_houses(viewer, shader):
         house_node.add(mesh)
 
     viewer.add(house_node)
-
 
     # House - 2
     house_node = Node(
@@ -326,13 +324,14 @@ def build_graveyard(viewer, shader):
     # Angel of Death
     angelofdeath_node = Node(
         transform=translate(-90, -1, -10) @ scale(0.06, 0.06, 0.06) @ rotate((0, 1, 0), 90))
-    mesh_list = load_textured_phong_mesh(file="./../resources/graveyard/Angel/Angelofdeath/angelofdeath_dec_reduced.obj", shader=shader,
-                                         tex_file="./../resources/cannon/Cannon_3/Textures/metal.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
+    mesh_list = load_textured_phong_mesh(
+        file="./../resources/graveyard/Angel/Angelofdeath/angelofdeath_dec_reduced.obj", shader=shader,
+        tex_file="./../resources/cannon/Cannon_3/Textures/metal.jpg",
+        k_a=(.4, .4, .4),
+        k_d=(1.2, 1.2, 1.2),
+        k_s=(.2, .2, .2),
+        s=4
+        )
 
     for mesh in mesh_list:
         angelofdeath_node.add(mesh)
@@ -633,7 +632,6 @@ def add_characters(viewer, shader):
     # keyframe_archer_node.add(archer_node)
     # viewer.add(keyframe_archer_node)
 
-
     # Farmer
     keyframe_farmer_node = KeyFrameControlNode(
         translate_keys={60: vec(0, -1, -5), 30: vec(100, -1, -5), 0: vec(0, -1, -5)},
@@ -649,7 +647,7 @@ def add_characters(viewer, shader):
         transform=translate(0, 0, 0) @ scale(size, size, size) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), -90))
     mesh_list = load_textured_phong_mesh_skinned("./../resources/characters/farmer/farmer.FBX", shader=shader,
                                                  tex_file="./../resources/characters/farmer/texture_01.jpg",
-                                                 k_a=(1, 1, 1),
+                                                 k_a=(.4, .4, .4),
                                                  k_d=(.6, .6, .6),
                                                  k_s=(.1, .1, .1),
                                                  s=4, delay=1.0
@@ -675,9 +673,9 @@ def add_characters(viewer, shader):
         transform=translate(0, 0, 0) @ scale(size, size, size) @ rotate((1, 0, 0), -90) @ rotate((0, 0, 1), 0))
     mesh_list = load_textured_phong_mesh_skinned("./../resources/characters/farmer/farmer.FBX", shader=shader,
                                                  tex_file="./../resources/characters/farmer/cahracter_templar.jpg",
-                                                 k_a=(1, 1, 1),
-                                                 k_d=(.6, .6, .6),
-                                                 k_s=(.1, .1, .1),
+                                                 k_a=(.4, .4, .4),
+                                                 k_d=(1.2, 1.2, 1.2),
+                                                 k_s=(.2, .2, .2),
                                                  s=4, delay=1.0
                                                  )
 
@@ -723,12 +721,12 @@ def add_lamps(viewer, shader):
     lamp_node = Node(
         transform=translate(10, -1, -10) @ scale(0.7, 0.7, 0.7))
     lamp_mesh_list = load_textured_phong_mesh(file="./../resources/lamp/lamp_ThinMatrix.obj", shader=shader,
-                                                tex_file="./../resources/lamp/lamp_ThinMatrix.png",
-                                                k_a=(1, 1, 1),
-                                                k_d=(.6, .6, .6),
-                                                k_s=(.1, .1, .1),
-                                                s=4
-                                                )
+                                              tex_file="./../resources/lamp/lamp_ThinMatrix.png",
+                                              k_a=(1, 1, 1),
+                                              k_d=(.6, .6, .6),
+                                              k_s=(.1, .1, .1),
+                                              s=4
+                                              )
     for mesh in lamp_mesh_list:
         lamp_node.add(mesh)
     viewer.add(lamp_node)
@@ -774,9 +772,9 @@ def main():
 
     build_terrain(viewer, shader=terrain_shader)
     build_tree(viewer, shader=phong_shader)
-    # build_graveyard(viewer, shader=phong_shader)
+    build_graveyard(viewer, shader=phong_shader)
     build_houses(viewer, shader=phong_shader)
-    # build_castle(viewer, shader=phong_shader)
+    build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
     add_characters(viewer, shader=skinning_shader)
     add_animations(viewer, shader=phong_shader)

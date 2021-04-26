@@ -201,6 +201,13 @@ class TexturedPhongMeshSkinned:
             bone_loc = GL.glGetUniformLocation(self.shader.glid, 'bone_matrix[%d]' % bone_id)
             GL.glUniformMatrix4fv(bone_loc, len(self.bone_nodes), True, bone_matrix)
 
+        for i in range(0, self.fog_colour.num_light_src):
+            light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
+            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+
+            atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
+            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
+
         # world camera position for Phong illumination specular component
         w_camera_position = np.linalg.inv(view)[:, 3]
         GL.glUniform3fv(loc['w_camera_position'], 1, w_camera_position)
