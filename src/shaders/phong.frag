@@ -32,8 +32,7 @@ void main() {
     // vec4 color = vec4(0.2, 0.20, 0.20, 1.0);
 
     vec3 n = normalize(w_normal);
-    vec3 l = normalize(-vec3(-1, -1, -1));
-    vec3 r = reflect(-l, n);
+    // vec3 l = normalize(-vec3(-1, -1, -1));
     vec3 v = normalize(w_camera_position - w_position);
 
     vec3 total_diffuse = vec3(0.0);
@@ -44,6 +43,7 @@ void main() {
         float d = length(to_light_vector[i]);
         float atten = (atten_factor[i].x) + (atten_factor[i].y * d) + (atten_factor[i].z * d * d);
         vec3 unit_light_vector = normalize(to_light_vector[i]);
+        vec3 r = reflect(-unit_light_vector, n);
 
         // The Phong model parameters
         vec3 diffuse_color = k_d * max(dot(n, unit_light_vector), 0) * vec3(texture(diffuse_map, frag_uv));
@@ -55,11 +55,6 @@ void main() {
     }
 
     vec3 ambient_color = k_a * vec3(texture(diffuse_map, frag_uv));
-
-    // TODO: (Unused)
-    vec3 unit_normal = normalize(surface_normal);
-
-    // out_color = vec4(ambient_color, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
 
     out_color = vec4(ambient_color, 1) + (vec4(total_diffuse, 1) + vec4(total_specular, 1));
     out_color = mix(vec4(fog_colour, 1), out_color, visibility);

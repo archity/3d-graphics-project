@@ -17,10 +17,6 @@ in float visibility;
 in vec3 to_light_vector[NUM_LIGHT_SRC];
 uniform vec3 atten_factor[NUM_LIGHT_SRC];
 
-// Lighting effects variables (Unused)
-//in vec3 surfaceNormal;
-//in vec3 toLightVector;
-//in vec3 toCameraVector;
 
 void main() {
 

@@ -20,10 +20,10 @@ class Texture:
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, min_filter)
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, mag_filter)
             GL.glGenerateMipmap(GL.GL_TEXTURE_2D)
-            message = 'Loaded texture %s\t(%s, %s, %s, %s)'
-            print(message % (tex_file, tex.shape, wrap_mode, min_filter, mag_filter))
+            # message = 'Loaded texture %s\t(%s, %s, %s, %s)'
+            # print(message % (tex_file, tex.shape, wrap_mode, min_filter, mag_filter))
         except FileNotFoundError:
             print("ERROR: unable to load texture file %s" % tex_file)
 
-    # def __del__(self):  # delete GL texture from GPU when object dies
-    #     GL.glDeleteTextures(self.glid)
+    def __del__(self):  # delete GL texture from GPU when object dies
+        GL.glDeleteTextures(self.glid)

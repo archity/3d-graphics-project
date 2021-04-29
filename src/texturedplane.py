@@ -7,12 +7,13 @@ from PIL import Image
 
 from mesh import Mesh
 from texture import Texture
-from fog import FogColour
-from transform  import normalized
+from transform import normalized
+from node import Node
+import config
 
 
 # -------------- Example texture plane class ----------------------------------
-class TexturedPlane(Mesh):
+class TexturedPlane(Mesh, Node):
     """ Simple first textured object """
 
     def __init__(self, background_texture_file, road_texture_file, road2_texture_file,  blendmap_file, shader, size, hmap_file):
@@ -28,7 +29,7 @@ class TexturedPlane(Mesh):
         self.road_texture_file = road_texture_file
         self.road2_texture_file = road2_texture_file
         self.blendmap_file = blendmap_file
-        self.fog_colour = FogColour()
+        # self.fog_colour = FogColour()
 
         vertices, texture_coords, normals, indices = self.create_attributes(self.HMAP_SIZE, hmap_tex=hmap_tex)
 
@@ -111,13 +112,13 @@ class TexturedPlane(Mesh):
         return height
 
     def key_handler(self, key):
-        # some interactive elements
+        # some day-night interactive elements
         if key == glfw.KEY_F6:
-            self.wrap_mode = next(self.wrap)
-            self.texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
+            config.fog_colour.toggle_value = 6
         if key == glfw.KEY_F7:
-            self.filter_mode = next(self.filter)
-            self.texture = Texture(self.background_texture_file, self.wrap_mode, *self.filter_mode)
+            config.fog_colour.toggle_value = 7
+        if key == glfw.KEY_F8:
+            config.fog_colour.toggle_value = 8
 
     def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
         GL.glUseProgram(self.shader.glid)
@@ -132,17 +133,16 @@ class TexturedPlane(Mesh):
         GL.glUniform1i(self.loc1['blue_texture'], 1)
         GL.glUniform1i(self.loc1['red_texture'], 2)
         GL.glUniform1i(self.loc1['blendmap'], 3)
-        GL.glUniform3fv(self.loc1['fog_colour'], 1, self.fog_colour.get_colour())
+        GL.glUniform3fv(self.loc1['fog_colour'], 1, config.fog_colour.get_colour())
 
         # print(self.fog_colour.get_atten()[0])
         # atten_var = self.fog_colour.get_atten()
-        for i in range(0, self.fog_colour.num_light_src):
+        for i in range(0, config.fog_colour.num_light_src):
             light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
-            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+            GL.glUniform3fv(light_pos_loc, 1, config.fog_colour.light_pos[i])
 
             atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
-            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
-
+            GL.glUniform3fv(atten_loc, 1, config.fog_colour.get_atten()[i])
 
     def bind_textures(self):
         GL.glActiveTexture(GL.GL_TEXTURE0)

@@ -1,6 +1,5 @@
 import os
 import sys
-
 import OpenGL.GL as GL
 
 
@@ -42,7 +41,7 @@ class Shader:
                 print(GL.glGetProgramInfoLog(self.glid).decode('ascii'))
                 sys.exit(1)
 
-    # def __del__(self):
-    #     GL.glUseProgram(0)
-    #     if self.glid:  # if this is a valid shader object
-    #         GL.glDeleteProgram(self.glid)  # object dies => destroy GL object
+    def __del__(self):
+        GL.glUseProgram(0)
+        if self.glid:  # if this is a valid shader object
+            GL.glDeleteProgram(self.glid)  # object dies => destroy GL object

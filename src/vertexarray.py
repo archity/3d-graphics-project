@@ -47,6 +47,6 @@ class VertexArray:
         GL.glBindVertexArray(self.glid)
         self.draw_command(primitive, *self.arguments)
 
-    # def __del__(self):  # object dies => kill GL array and buffers from GPU
-    #     GL.glDeleteVertexArrays(1, [self.glid])
-    #     GL.glDeleteBuffers(len(self.buffers), self.buffers)
+    def __del__(self):  # object dies => kill GL array and buffers from GPU
+        GL.glDeleteVertexArrays(1, [self.glid])
+        GL.glDeleteBuffers(len(self.buffers), self.buffers)

@@ -1,11 +1,9 @@
 import copy
-
 import numpy as np
-import glfw  # lean window system wrapper for OpenGL
-import OpenGL.GL as GL  # standard Python OpenGL wrapper
+import glfw
 from PIL import Image
 
-from transform import rotate, translate, scale, normalized, sincos
+from transform import normalized
 
 
 class Camera:
@@ -26,9 +24,10 @@ class Camera:
         self.fov = 45.0
         self.last_x = 800.0 / 2.0
         self.last_y = 600.0 / 2.0
-        self.sensitivity = 0.03
+        self.sensitivity = 0.04
         # self.update_camera_vectors()
 
+        # High resolution heightmap image for smoother collision detection
         self.hmap_file = "./../resources/map/hmap_2_mounds_4096px.png"
         self.hmap_tex = np.asarray(Image.open(self.hmap_file).convert('RGB'))
 
@@ -115,51 +114,6 @@ class Camera:
         height *= 30
 
         return height
-
-    # def process_mouse_movement(self, window, xpos, ypos):
-    #     # (DISABLED)
-    #     if self.first_mouse:
-    #         # xpos, ypos = glfw.get_cursor_pos(window)
-    #         self.last_x = xpos
-    #         self.last_y = ypos
-    #         self.first_mouse = False
-    #
-    #     xoffset = xpos - self.last_x
-    #     yoffset = self.last_y - ypos
-    #
-    #     self.last_x = xpos
-    #     self.last_y = ypos
-    #
-    #     sensitivity = 0.1
-    #     xoffset *= sensitivity
-    #     yoffset *= sensitivity
-    #
-    #     self.yaw += xoffset
-    #     self.pitch += yoffset
-    #
-    #     # Make sure that when pitch is out of bounds, screen doesn't get flipped
-    #     if self.pitch > 89.0:
-    #         self.pitch = 89.0
-    #     if self.pitch < -89.0:
-    #         self.pitch = -89.0
-    #
-    #     if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT):
-    #         self.update_camera_vectors()
-
-    # def update_camera_vectors(self):
-    #     # Calculate the sine and cosine of yaw and pitch
-    #     sin_yaw, cos_yaw = sincos(degrees=self.yaw)
-    #     sin_pitch, cos_pitch = sincos(degrees=self.pitch)
-    #
-    #     # Get the direction's x, y and z component
-    #     front = np.array((0.0, 0.0, 0.0))
-    #     front[0] = cos_yaw * cos_pitch
-    #     front[1] = sin_pitch
-    #     front[2] = sin_yaw * cos_pitch
-    #
-    #     self.camera_front = normalized(front)
-    #     self.camera_right = normalized(np.cross(self.camera_front, self.up))
-    #     self.up = normalized(np.cross(self.camera_right, self.camera_front))
 
     def get_camera_pos(self):
         return self.camera_pos

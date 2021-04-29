@@ -6,7 +6,8 @@ from transform import rotate, translate, scale
 from bisect import bisect_left
 from transform import (quaternion_slerp, quaternion_matrix, quaternion,
                        quaternion_from_euler, lerp)
-import simpleaudio as sa
+import config
+# import simpleaudio as sa
 
 class KeyFrames:
     """ Stores keyframe pairs for any value type with interpolation_function"""
@@ -89,5 +90,6 @@ class KeyFrameControlNode(Node):
         # For cannonball firing
         if key == glfw.KEY_F:
             self.fire = True
-            wave_obj = sa.WaveObject.from_wave_file("./../resources/audio/ee2_cannon_low.wav")
-            wave_obj.play()
+            if config.sound == True:
+                wave_obj = config.sa.WaveObject.from_wave_file("./../resources/audio/ee2_cannon_low.wav")
+                wave_obj.play()

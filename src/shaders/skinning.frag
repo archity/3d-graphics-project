@@ -29,8 +29,7 @@ uniform vec3 atten_factor[NUM_LIGHT_SRC];
 
 void main() {
     vec3 n = normalize(w_normal);
-    vec3 l = normalize(-vec3(-1, -1, -1));
-    vec3 r = reflect(-l, n);
+    // vec3 l = normalize(-vec3(-1, -1, -1));
     vec3 v = normalize(w_camera_position - w_position);
 
     vec3 total_diffuse = vec3(0.0);
@@ -41,7 +40,7 @@ void main() {
         float d = length(to_light_vector[i]);
         float atten = (atten_factor[i].x) + (atten_factor[i].y * d) + (atten_factor[i].z * d * d);
         vec3 unit_light_vector = normalize(to_light_vector[i]);
-
+        vec3 r = reflect(-unit_light_vector, n);
         // The Phong model parameters
         vec3 diffuse_color = k_d * max(dot(n, unit_light_vector), 0) * vec3(texture(diffuse_map, frag_uv));
         vec3 specular_color = k_s * pow(max(dot(r, v), 0), s) * vec3(texture(diffuse_map, frag_uv));

@@ -1,8 +1,10 @@
 import OpenGL.GL as GL
 import numpy as np
+import glfw
 
 from vertexarray import VertexArray
-from fog import FogColour
+from node import Node
+import config
 
 
 # ------------  Mesh is a core drawable, can be basis for most objects --------
@@ -26,81 +28,18 @@ class Mesh:
         self.vertex_array.execute(primitives)
 
 
-class TexturedMesh(Mesh):
+# -------------- Texture based Phong rendered Mesh class -------------------------
 
-    def __init__(self, shader, tex, attributes, faces):
-        super().__init__(shader, attributes, faces)
-
-        loc = GL.glGetUniformLocation(shader.glid, 'diffuse_map')
-        self.loc['diffuse_map'] = loc
-
-        # setup texture and upload it to GPU
-        self.texture = tex
-
-    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
-        GL.glUseProgram(self.shader.glid)
-
-        # texture access setups
-        GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
-        GL.glUniform1i(self.loc['diffuse_map'], 0)
-        super().draw(projection, view, model, primitives)
-
-        # leave clean state for easier debugging
-        GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
-        GL.glUseProgram(0)
-
-
-# -------------- Phong rendered Mesh class -----------------------------------
-class PhongMesh(Mesh):
-    """ Mesh with Phong illumination """
-
-    def __init__(self, shader, attributes, index=None,
-                 light_dir=(1, -1, 1),  # directional light (in world coords)
-                 k_a=(0, 0, 0), k_d=(1, 1, 0), k_s=(1, 1, 1), s=16.):
-        super().__init__(shader, attributes, index)
-
-        print(light_dir)
-        self.light_dir = light_dir
-        self.k_a, self.k_d, self.k_s, self.s = k_a, k_d, k_s, s
-
-        # retrieve OpenGL locations of shader variables at initialization
-        names = ['light_dir', 'k_a', 's', 'k_s', 'k_d', 'w_camera_position']
-
-        loc = {n: GL.glGetUniformLocation(shader.glid, n) for n in names}
-        self.loc.update(loc)
-
-    def draw(self, projection, view, model, primitives=GL.GL_TRIANGLES):
-        GL.glUseProgram(self.shader.glid)
-
-        # setup light parameters
-        GL.glUniform3fv(self.loc['light_dir'], 1, self.light_dir)
-
-        # setup material parameters
-        GL.glUniform3fv(self.loc['k_a'], 1, self.k_a)
-        GL.glUniform3fv(self.loc['k_d'], 1, self.k_d)
-        GL.glUniform3fv(self.loc['k_s'], 1, self.k_s)
-        GL.glUniform1f(self.loc['s'], max(self.s, 0.001))
-
-        # world camera position for Phong illumination specular component
-        w_camera_position = np.linalg.inv(view)[:, 3]
-        GL.glUniform3fv(self.loc['w_camera_position'], 1, w_camera_position)
-
-        super().draw(projection, view, model, primitives)
-
-
-class TexturedPhongMesh:
+class TexturedPhongMesh(Node):
     def __init__(self, shader, tex, attributes, faces,
-                 light_dir=None,  # directional light (in world coords)
-                 k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0), s=64.
-                 ):
+                 light_dir=None, k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0),
+                 s=64.):
         # super().__init__(shader, tex, attributes, faces)
-
+        super().__init__()
         # setup texture and upload it to GPU
         self.texture = tex
         self.vertex_array = VertexArray(attributes=attributes, index=faces)
         self.shader = shader
-        self.fog_colour = FogColour()
 
         self.k_a = k_a
         self.k_d = k_d
@@ -113,18 +52,17 @@ class TexturedPhongMesh:
 
         # projection geometry
         names = ['view', 'projection', 'model',
-                 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's',
-                 'fog_colour']
+                 'diffuseMap', 'k_a', 'k_d', 'k_s', 's',
+                 'fog_colour', 'w_camera_position']
         loc = {n: GL.glGetUniformLocation(self.shader.glid, n) for n in names}
 
-        # atten_array = self.fog_colour.get_atten()
         # Iterate over all the light sources and send (to shader) their properties.
-        for i in range(0, self.fog_colour.num_light_src):
+        for i in range(0, config.fog_colour.num_light_src):
             light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
-            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+            GL.glUniform3fv(light_pos_loc, 1, config.fog_colour.light_pos[i])
 
             atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
-            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
+            GL.glUniform3fv(atten_loc, 1, config.fog_colour.get_atten()[i])
 
         GL.glUniformMatrix4fv(loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(loc['projection'], 1, True, projection)
@@ -134,11 +72,14 @@ class TexturedPhongMesh:
         GL.glUniform3fv(loc['k_d'], 1, self.k_d)
         GL.glUniform3fv(loc['k_s'], 1, self.k_s)
         GL.glUniform1f(loc['s'], max(self.s, 0.001))
-        GL.glUniform3fv(loc['fog_colour'], 1, self.fog_colour.get_colour())
+        GL.glUniform3fv(loc['fog_colour'], 1, config.fog_colour.get_colour())
+
+        # world camera position for Phong illumination specular component
+        w_camera_position = np.linalg.inv(view)[:, 3]
+        GL.glUniform3fv(loc['w_camera_position'], 1, w_camera_position)
 
         # ----------------
         # texture access setups
-        # loc = GL.glGetUniformLocation(self.shader.glid, 'diffuseMap')
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
         GL.glUniform1i(loc['diffuseMap'], 0)
@@ -148,26 +89,33 @@ class TexturedPhongMesh:
         GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
         GL.glUseProgram(0)
 
+    def key_handler(self, key):
+        # Some day-night toggling functions
+        # fog_colour is globally defined in config.py file,
+        # hence changes here will be reflected and available for all classes/functions
+        if key == glfw.KEY_F6:
+            config.fog_colour.toggle_value = 6
+        if key == glfw.KEY_F7:
+            config.fog_colour.toggle_value = 7
+        if key == glfw.KEY_F8:
+            config.fog_colour.toggle_value = 8
 
-class TexturedPhongMeshSkinned:
-    def __init__(self, shader, tex, attributes, faces,
-                 bone_nodes, bone_offsets,
-                 light_dir=None,  # directional light (in world coords)
-                 k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0), s=64.
-                 ):
-        # super().__init__(shader, tex, attributes, faces)
+
+class TexturedPhongMeshSkinned(Node):
+    def __init__(self, shader, tex, attributes, faces, bone_nodes, bone_offsets,
+                 k_a=(1, 1, 1), k_d=(1, 1, 0), k_s=(1, 1, 0), s=64.):
+        super().__init__()
 
         # setup texture and upload it to GPU
         self.texture = tex
         self.vertex_array = VertexArray(attributes=attributes, index=faces)
         self.shader = shader
-        self.fog_colour = FogColour()
+        # self.fog_colour = FogColour()
 
         self.k_a = k_a
         self.k_d = k_d
         self.k_s = k_s
         self.s = s
-        self.fog_colour = FogColour()
         # ----------------
         self.bone_nodes = bone_nodes
         self.bone_offsets = np.array(bone_offsets, np.float32)
@@ -176,12 +124,9 @@ class TexturedPhongMeshSkinned:
         GL.glUseProgram(self.shader.glid)
 
         # projection geometry
-        names = ['view', 'projection', 'model', 'nit_matrix', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's',
+        names = ['view', 'projection', 'model', 'diffuseMap', 'k_a', 'k_d', 'k_s', 's',
                  'fog_colour', 'w_camera_position']
         loc = {n: GL.glGetUniformLocation(self.shader.glid, n) for n in names}
-
-        # model3x3 = model[0:3, 0:3]
-        # nit_matrix = np.linalg.inv(model3x3).T
 
         GL.glUniformMatrix4fv(loc['view'], 1, True, view)
         GL.glUniformMatrix4fv(loc['projection'], 1, True, projection)
@@ -191,8 +136,7 @@ class TexturedPhongMeshSkinned:
         GL.glUniform3fv(loc['k_d'], 1, self.k_d)
         GL.glUniform3fv(loc['k_s'], 1, self.k_s)
         GL.glUniform1f(loc['s'], max(self.s, 0.001))
-        GL.glUniform3fv(loc['fog_colour'], 1, self.fog_colour.get_colour())
-        # GL.glUniformMatrix4fv(loc['nit_matrix'], 1, True, nit_matrix)
+        GL.glUniform3fv(loc['fog_colour'], 1, config.fog_colour.get_colour())
 
         # bone world transform matrices need to be passed for skinning
         for bone_id, node in enumerate(self.bone_nodes):
@@ -201,12 +145,13 @@ class TexturedPhongMeshSkinned:
             bone_loc = GL.glGetUniformLocation(self.shader.glid, 'bone_matrix[%d]' % bone_id)
             GL.glUniformMatrix4fv(bone_loc, len(self.bone_nodes), True, bone_matrix)
 
-        for i in range(0, self.fog_colour.num_light_src):
+        # Iterate over all the light sources and send (to shader) their properties.
+        for i in range(0, config.fog_colour.num_light_src):
             light_pos_loc = GL.glGetUniformLocation(self.shader.glid, 'light_position[%d]' % i)
-            GL.glUniform3fv(light_pos_loc, 1, self.fog_colour.light_pos[i])
+            GL.glUniform3fv(light_pos_loc, 1, config.fog_colour.light_pos[i])
 
             atten_loc = GL.glGetUniformLocation(self.shader.glid, 'atten_factor[%d]' % i)
-            GL.glUniform3fv(atten_loc, 1, self.fog_colour.get_atten()[i])
+            GL.glUniform3fv(atten_loc, 1, config.fog_colour.get_atten()[i])
 
         # world camera position for Phong illumination specular component
         w_camera_position = np.linalg.inv(view)[:, 3]
@@ -214,7 +159,6 @@ class TexturedPhongMeshSkinned:
 
         # ----------------
         # texture access setups
-        # loc = GL.glGetUniformLocation(self.shader.glid, 'diffuseMap')
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture.glid)
         GL.glUniform1i(loc['diffuseMap'], 0)

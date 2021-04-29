@@ -8,8 +8,9 @@ import numpy as np
 from PIL import Image
 
 from vertexarray import VertexArray
-from fog import FogColour
-from transform import translate, perspective, rotate, lookat
+from transform import rotate
+from node import Node
+import config
 
 # Skybox vertices
 skyboxVertices = np.array((
@@ -63,14 +64,15 @@ face_list = [
 ]
 
 
-class Skybox:
+class Skybox(Node):
     def __init__(self, shader_skybox):
+        super().__init__()
         self.rotation = 0
 
         self.ROTATION_SPEED = 1
         self.shader_skybox = shader_skybox
         self.time = 0
-        self.fog_colour = FogColour()
+        # self.fog_colour = FogColour()
 
         day_skybox = "./../resources/skybox/skybox2/"
         night_skybox = "./../resources/skybox/skybox3/"
@@ -101,7 +103,7 @@ class Skybox:
             face = np.array(Image.open(face_url))
             GL.glTexImage2D(GL.GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, GL.GL_RGB, face.shape[1],
                             face.shape[0], 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, face)
-            print("Loaded: ", face_url)
+            # print("Loaded: ", face_url)
 
         # Cubemap's wrapping and filtering methods
         GL.glTexParameteri(GL.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
@@ -158,28 +160,36 @@ class Skybox:
 
     def bind_textures(self):
         # color = (0.2, 0.20, 0.20)
-        self.time = glfw.get_time() * 1000
-        self.time %= 24000
+        if config.fog_colour.toggle_value == 8:
+            # Toggle day-night transition
+            self.time = glfw.get_time() * 1000 * 1
+            self.time %= 24000
+        elif config.fog_colour.toggle_value == 6:
+            # Day only
+            self.time = 8000
+        elif config.fog_colour.toggle_value == 7:
+            # Night only
+            self.time = 0
+
         if 0 <= self.time < 5000:
             blend_factor = (self.time - 0) / (5000 - 0)
             texture1 = self.night_skybox_texture
             texture2 = self.night_skybox_texture
-            # color = (0.2, 0.20, 0.20)
+
         elif 5000 <= self.time < 8000:
             blend_factor = (self.time - 5000) / (8000 - 5000)
             texture1 = self.night_skybox_texture
             texture2 = self.day_skybox_texture
-            # color = (0.4, 0.45, 0.45)
-        elif 8000 <= self.time < 21000:
-            blend_factor = (self.time - 8000) / (21000 - 8000)
+
+        elif 8000 <= self.time < 14000:
+            blend_factor = (self.time - 8000) / (14000 - 8000)
             texture1 = self.day_skybox_texture
             texture2 = self.day_skybox_texture
-            # color = (0.6, 0.70, 0.70)
+
         else:
-            blend_factor = (self.time - 21000) / (24000 - 21000)
+            blend_factor = (self.time - 14000) / (24000 - 14000)
             texture1 = self.day_skybox_texture
             texture2 = self.night_skybox_texture
-            # color = (0.4, 0.45, 0.45)
 
         # Bind the cubemaps' texture
         GL.glActiveTexture(GL.GL_TEXTURE0)
@@ -188,5 +198,6 @@ class Skybox:
         GL.glActiveTexture(GL.GL_TEXTURE1)
         GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture2)
         GL.glUniform1i(self.loc['skybox2'], 1)
+
         GL.glUniform1f(self.loc['blend_factor'], blend_factor)
-        GL.glUniform3fv(self.loc['sky_color'], 1, self.fog_colour.get_colour())
+        GL.glUniform3fv(self.loc['sky_color'], 1, config.fog_colour.get_colour())
