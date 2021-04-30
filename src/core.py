@@ -661,7 +661,7 @@ def add_animations(viewer, shader):
     viewer.add(cannon_ball_node)
 
     def circular_motion(r=30, x_offset=0, y_offset=0, z_offset=0, direction=0):
-        speed = 100
+        speed = 10
         angle = (glfw.get_time() * speed) % 360
 
         # Reverse the direction of rotation
