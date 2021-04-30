@@ -3,6 +3,8 @@ import os  # os function, i.e. checking file status
 import glfw
 import assimpcy
 import numpy as np  # all matrix manipulations & OpenGL args
+import random
+import math
 
 # External, non built-in modules
 from mesh import TexturedPhongMesh, TexturedPhongMeshSkinned
@@ -13,6 +15,7 @@ from texturedplane import TexturedPlane
 from keyframe import KeyFrameControlNode
 from procedural_anime import ProceduralAnimation
 from transform import quaternion, rotate, translate, scale, vec, quaternion_from_axis_angle
+
 
 # --------------------------------------------------------
 # Loader functions for loading different types of 3D objects
@@ -657,29 +660,44 @@ def add_animations(viewer, shader):
         cannon_ball_node.add(mesh)
     viewer.add(cannon_ball_node)
 
-    def circular_motion():
-        r = 10
+    def circular_motion(r=30, x_offset=0, y_offset=0, z_offset=0, direction=0):
         speed = 100
         angle = (glfw.get_time() * speed) % 360
-        x = r * np.cos(np.deg2rad(angle))
-        y = np.absolute(r * np.sin(np.deg2rad(angle)))
-        z = 100 + r * np.sin(np.deg2rad(angle))
-        trans_mat = translate(x, y, z) @ rotate((0, 1, 0), angle)
-        keyframe_transform = trans_mat
-        return keyframe_transform
+
+        # Reverse the direction of rotation
+        if direction == 1:
+            rev_angle = 360 - angle
+            angle = rev_angle
+        x = x_offset + (r * math.cos(math.radians(angle)))
+        y = y_offset + (np.absolute(10 * math.sin(math.radians(angle))))
+        z = z_offset + (r * math.sin(math.radians(angle)))
+        transformation = translate(x, y, z) @ rotate((0, 1, 0), angle)
+        return transformation
 
     # Bird
-    bird_node = ProceduralAnimation(circular_motion)
-    mesh_list = load_textured_phong_mesh(file="./../resources/bird/Bird_2.obj", shader=shader,
-                                         tex_file="./../resources/bird/black.jpg",
-                                         k_a=(.4, .4, .4),
-                                         k_d=(1.2, 1.2, 1.2),
-                                         k_s=(.2, .2, .2),
-                                         s=4
-                                         )
-    for mesh in mesh_list:
-        bird_node.add(mesh)
-    viewer.add(bird_node)
+    for i in range(5):
+        radius = int(random.randrange(start=10, stop=100, step=10))
+        x_offset = int(random.randrange(start=10, stop=50, step=5))
+        y_offset = int(random.randrange(start=0, stop=10, step=2))
+        z_offset = int(random.randrange(start=10, stop=50, step=5))
+        direction = int(random.randrange(start=0, stop=2, step=1))
+
+        bird_node = ProceduralAnimation(circular_motion,
+                                        radius=radius,
+                                        x_offset=x_offset,
+                                        y_offset=y_offset,
+                                        z_offset=z_offset,
+                                        direction=direction)
+        mesh_list = load_textured_phong_mesh(file="./../resources/bird/Bird_2.obj", shader=shader,
+                                             tex_file="./../resources/bird/black.jpg",
+                                             k_a=(.4, .4, .4),
+                                             k_d=(1.2, 1.2, 1.2),
+                                             k_s=(.2, .2, .2),
+                                             s=4
+                                             )
+        for mesh in mesh_list:
+            bird_node.add(mesh)
+        viewer.add(bird_node)
 
 
 def add_lamps(viewer, shader):
