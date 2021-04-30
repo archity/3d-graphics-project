@@ -2,6 +2,17 @@
 
 Medieval scene based project for the course 3D Graphics at MoSIG.
 
+Welcome to our empire. You can roam all over the places using the following keys (French Keyboard):
+* Z: Move Forward
+* Q: Move Left
+* S: Move Backward
+* D: Move Right
+* UP Arrow: To look upwards
+* Right Arrow: To turn right
+* Left Arrow: To turn left
+
+Roam into our kingdom to watch the green meadows, hugh castle, a church, a graveyard, houses with farms, farmers and templars roaming in the streets. Look up to see flock of birds flying in the sky. You can also fire a cannon ball from the cannon tower by pressing 'F' key. Enjoy roaming in our kingdoms as days and night will pass by. Remember to look up into the starry night sky. And use you earphones while pressing 'F' key. Now I will let you explore our kingdom.
+
 ## 1. Authors
 
 * Archit YADAV
@@ -49,6 +60,10 @@ python3 main.py
 
 * Rendering
     * Light and materials
+        * Phong Effect
+        * Lambertian Effect
+        * Multiple Point Light Effects 
+        * Point Light Attenuation
     * Texture based objects
     * Novel rendering effects:
         * Fog
@@ -61,7 +76,7 @@ python3 main.py
 * Animation
     * Keyframe-only animation
     * Procedural animation
-        * Birds circling over the sky in random fashion
+        * Birds (Boids) circling over the sky in random fashion
     * Skinning + keyframe
         * Farmer/templar walking on a defined path
     * Keyboard control element
@@ -72,8 +87,14 @@ python3 main.py
 All of us were involved in a mix of features.
 
 
-## 6. Difficulties/Improvements
+## 6. Difficulties
 
 * Normal mapping - We attempted to implement normal mapping. We even had done an implementation which would calculate the tangents and bitangents, but the object wouldn't display at all at runtime. This is a feature which we would like to have it implemented sometime in future, when we'd have more time to properly work on it.
 
 * Real-time based Point light effects - It took a lot of time to properly understand how to create 4 different sources of light, and how all the objects would be affected by these, that too in accordance with the time of the day.
+
+## 7. Improvements
+
+* Bloom Effect
+* Shadow Effect
+* PBR
