@@ -14,7 +14,6 @@ from core import build_terrain, build_tree, build_houses,\
 from skybox import Skybox
 
 import config
-# import simpleaudio as sa
 
 
 def main():
@@ -25,14 +24,14 @@ def main():
     terrain_shader = Shader("shaders/terrain.vert", "shaders/terrain.frag")
     # cube_shader = Shader("shaders/texture.vert", "shaders/texture.frag")
     phong_shader = Shader("shaders/phong.vert", "shaders/phong.frag")
-    # lambertian_shader = Shader("shaders/lambertian.vert", "shaders/lambertian.frag")
+    lambertian_shader = Shader("shaders/lambertian.vert", "shaders/lambertian.frag")
     skinning_shader = Shader("shaders/skinning.vert", "shaders/skinning.frag")
 
     # Add all the elements of the scene ony by one
     build_terrain(viewer, shader=terrain_shader)
     build_tree(viewer, shader=phong_shader)
     build_graveyard(viewer, shader=phong_shader)
-    build_houses(viewer, shader=phong_shader)
+    build_houses(viewer, shader=phong_shader, lamb_shader=lambertian_shader)
     build_castle(viewer, shader=phong_shader)
     build_church(viewer, shader=phong_shader)
     add_characters(viewer, shader=skinning_shader)

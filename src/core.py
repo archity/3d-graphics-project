@@ -206,7 +206,7 @@ def load_textured_phong_mesh_skinned(file, shader, tex_file, k_a, k_d, k_s, s, d
 # Utility functions calling the loader functions
 # --------------------------------------------------------
 
-def build_houses(viewer, shader):
+def build_houses(viewer, shader, lamb_shader):
     # Hierarchical modelling for just the first house
     # Hierarchy contains house, a tree and 3 bushes as a single entity
     house_master_node = Node()
@@ -249,7 +249,7 @@ def build_houses(viewer, shader):
 
     tree_node = Node(
         transform=translate(35, -1, 15) @ scale(3, 3, 3) @ rotate((1, 0, 0), -90))
-    mesh_list = multi_load_textured(file="./../resources/nature/tree/CommonTree/CommonTree_4.fbx", shader=shader,
+    mesh_list = multi_load_textured(file="./../resources/nature/tree/CommonTree/CommonTree_4.fbx", shader=lamb_shader,
                                     tex_file=tex_list,
                                     k_a=(.4, .4, .4),
                                     k_d=(1.2, 1.2, 1.2),
