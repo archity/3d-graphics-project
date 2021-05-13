@@ -50,12 +50,9 @@ void main() {
 
         // Point Light
         total_diffuse = total_diffuse + diffuse_color / (atten);
-        total_specular = total_specular + specular_color / (atten);
     }
-    // Ambient part outside loop since it's not light dependent
-    vec3 ambient_color = k_a * vec3(texture(diffuse_map, frag_uv));
 
-    out_color = vec4(ambient_color, 1) + (vec4(total_diffuse, 1) + vec4(total_specular, 1));
+    out_color = vec4(total_diffuse, 1);
     out_color = mix(vec4(fog_colour, 1), out_color, visibility);
 
 }
