@@ -36,6 +36,7 @@ Roam into our kingdom to watch the green meadows, huge castle, a church, a grave
 ### 3.1 Minimum requirements
 
 The following libraries need to be installed for running the application. They can also be found in `requirements.txt` file, and installed using `pip3 install -r requirements.txt`
+
 ```
 AssimpCy
 glfw
@@ -120,10 +121,14 @@ All of us were involved in a mix of features.
 <img width="600" alt="rotation-sign-update" src="./img/screenshots_720p.jpg" align=center>
 </p>
 
+## 9. Demo Video
+
+[Link](https://www.dropbox.com/s/64ea7o6n3pawn7k/3DG_Demo_Video.mp4?dl=0) to a video showcasing all the features of the project.
+
 ---
 
-## 9. Description
-### 9.1 Camera
+## 10. Description
+### 10.1 Camera
 
 We defined a camera class which would help us with managing all the variables and functions associated with moving around the camera POV in our scene.
 
@@ -159,7 +164,7 @@ So the idea is to increase/decrease the x and z components in unison, depending 
 
 For right side rotation (clockwise), all the signs will be just reversed.
 
-### 9.2 Skybox
+### 10.2 Skybox
 We provided the functionality of 2 skyboxes - a day skybox with clouds and sun, and a night skybox with stars and planets. The skybox texture images were provided by the youtuber ThinMatrix.
 
 [Day skybox textures](https://www.dropbox.com/sh/phslacd8v9i17wb/AABui_-C-yhKvZ1H2wb3NykIa?dl=0)  
@@ -167,7 +172,7 @@ We provided the functionality of 2 skyboxes - a day skybox with clouds and sun, 
 
 We essentially load both the skybox textures in the Python code, and send them to the shaders, wherein we blend both the skybox in the ratio of a blend factor. The blend factor has values in the range of 0 to 1.
 
-### 9.3 Terrain
+### 10.3 Terrain
 
 We made use of `TexturedPlane` class in order to render grass of sufficient area in our scene. The grass would repeat itself, giving the illusion of a large available area. In order to support multiple textures on a single terrain (aka multi-texturing), we created a blendmap using GIMP, using which we can tell OpenGL which texture to render at what places.
 
@@ -181,7 +186,7 @@ The grass went to the black region, the pavement texture is mapped to blue regio
 <img width="300" alt="rotation-sign-update" src="./img/terrains.jpg" align=center>
 </p>
 
-### 9.4 3D Objects
+### 10.4 3D Objects
 
 3D models of type `.obj` and `.fbx` both are supported by the object loader. Both require the texture images also to be placed along with object file in the same directory.
 
@@ -189,7 +194,7 @@ The grass went to the black region, the pavement texture is mapped to blue regio
 
 TODO: Write about multi-texture vs single texture based objects, as well as animated objects.
 
-### 9.5 Audio
+### 10.5 Audio
 
 Simpleaudio library,
 Found from this link: https://stackoverflow.com/a/36284043/6475377
